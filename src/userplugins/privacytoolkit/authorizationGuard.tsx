@@ -63,7 +63,7 @@ function isDiscordHost(hostname: string): boolean {
 }
 
 function isAuthorizationUrl(url: URL): boolean {
-    return isDiscordHost(url.hostname) && /^\/oauth2\/authorize\/?$/i.test(url.pathname);
+    return isDiscordHost(url.hostname) && /^\/(?:api\/)?oauth2\/authorize\/?$/i.test(url.pathname);
 }
 
 function getRequestedScopes(url: URL): string[] {
@@ -144,7 +144,7 @@ function collectRisks(url: URL, config: AuthorizationGuardSettings): Authorizati
     return risks;
 }
 
-let bypassNextAuthorizationClick = false;
+let bypassAuthorizationElement: HTMLElement | undefined;
 let installedHandler: ((event: MouseEvent) => void) | undefined;
 
 function findAuthorizationElement(target: EventTarget | null): HTMLElement | null {
@@ -184,10 +184,13 @@ function openAuthorizationWarning(url: URL, risks: AuthorizationRisk[], element:
             variant="critical-primary"
             notice={{ type: "critical", message: "Data shared with an app or bot may be logged, retained, or copied into private databases or channels controlled by its operator. PrivacyToolkit cannot verify the developer's data-handling practices." }}
             onConfirm={() => {
-                // Replay the original user action once, preserving Discord's native
-                // route handling, target behavior, and authorization UI.
-                bypassNextAuthorizationClick = true;
+                // Replay only this element's original action once, preserving
+                // Discord's native route handling and target behavior.
+                bypassAuthorizationElement = element;
                 element.click();
+                queueMicrotask(() => {
+                    if (bypassAuthorizationElement === element) bypassAuthorizationElement = undefined;
+                });
             }}
         >
             <div className="privacy-toolkit-auth-warning">
@@ -218,8 +221,11 @@ export function startAuthorizationGuard(config: AuthorizationGuardSettings) {
     if (installedHandler) return;
 
     installedHandler = (event: MouseEvent) => {
-        if (bypassNextAuthorizationClick) {
-            bypassNextAuthorizationClick = false;
+        if (bypassAuthorizationElement && (
+            event.target === bypassAuthorizationElement ||
+            (event.target instanceof Node && bypassAuthorizationElement.contains(event.target))
+        )) {
+            bypassAuthorizationElement = undefined;
             return;
         }
 
@@ -243,5 +249,5 @@ export function startAuthorizationGuard(config: AuthorizationGuardSettings) {
 export function stopAuthorizationGuard() {
     if (installedHandler) document.removeEventListener("click", installedHandler, true);
     installedHandler = undefined;
-    bypassNextAuthorizationClick = false;
+    bypassAuthorizationElement = undefined;
 }
