@@ -24,7 +24,7 @@ A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides b
 - Audio is saved locally; no recording upload service is used by this feature. Default save destination follows the browser/Electron download setting (usually Downloads). A custom folder is available where Chromium's directory picker is supported.
 - The updater only checks the latest stable GitHub Release. It does not silently replace plugin code or rebuild Vencord.
 - Treat the plugin as experimental until you have built and tested it against your own Vencord/Discord version.
-
+- The plugin can prevent you from sending personal info to others. 
 ## Download
 
 Download **`privacytoolkit.zip`** from the [latest GitHub release](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases/latest). The archive contains the `privacytoolkit/` plugin folder plus the README, changelog, and license.
