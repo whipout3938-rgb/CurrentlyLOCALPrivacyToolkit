@@ -109,6 +109,15 @@ These controls belong to Discord, Google, and data-broker websites; PrivacyToolk
 
 Review Vencord's own settings-sync controls before storing highly sensitive watchlist values. PrivacyToolkit does not send the watchlist to an OSINT lookup service.
 
+## Quick authorization-guard test
+
+Use a **fake client ID** so the test cannot authorize a real app. With PrivacyToolkit enabled, post one of these links in a private test channel or DM and click it:
+
+- Email + identity scope: `https://discord.com/oauth2/authorize?client_id=000000000000000001&scope=identify%20email`
+- Bot + Administrator permission: `https://discord.com/oauth2/authorize?client_id=000000000000000001&scope=bot&permissions=8`
+
+Expected result: PrivacyToolkit should show its warning before Discord opens the authorization flow. Choose **Cancel authorization** to verify the link is stopped. Choosing **Continue anyway** should only reach Discord's invalid/fake application response because the client ID is intentionally not real. Do not replace the fake ID with a real app ID for this test.
+
 ## Feedback and tester reports
 
 Use [GitHub Issues](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/issues/new/choose) to send feedback directly to the PrivacyToolkit makers. Include the plugin version, Vencord build date, reproduction steps, and error text. Do not post real personal information, Discord tokens, private recordings, or unredacted images.
