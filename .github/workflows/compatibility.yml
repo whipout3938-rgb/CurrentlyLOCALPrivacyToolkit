@@ -1,0 +1,53 @@
+name: Vencord compatibility check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out PrivacyToolkit
+        uses: actions/checkout@v4
+
+      - name: Check out current Vencord
+        uses: actions/checkout@v4
+        with:
+          repository: Vendicated/Vencord
+          ref: main
+          path: vencord
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.15.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: vencord/pnpm-lock.yaml
+
+      - name: Install Vencord dependencies
+        working-directory: vencord
+        run: pnpm install --frozen-lockfile
+
+      - name: Install PrivacyToolkit into the test checkout
+        run: |
+          mkdir -p vencord/src/userplugins/privacytoolkit
+          cp src/userplugins/privacytoolkit/* vencord/src/userplugins/privacytoolkit/
+
+      - name: Type-check the complete Vencord checkout with PrivacyToolkit
+        working-directory: vencord
+        run: pnpm test:ts
+
+      - name: Build Vencord with PrivacyToolkit
+        working-directory: vencord
+        run: pnpm build
