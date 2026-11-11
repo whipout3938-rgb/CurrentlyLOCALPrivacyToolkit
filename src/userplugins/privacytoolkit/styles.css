@@ -1,0 +1,135 @@
+.privacy-toolkit-warning {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 8px 10px;
+    border: 1px solid var(--status-warning, #f0b232);
+    border-radius: 6px;
+    color: var(--text-normal);
+    background: color-mix(in srgb, var(--status-warning, #f0b232) 10%, transparent);
+    font-size: 12px;
+}
+.privacy-toolkit-warning strong {
+    color: var(--text-warning, #f0b232);
+    font-weight: 700;
+}
+.privacy-toolkit-warning small {
+    color: var(--text-muted);
+}
+[data-privacytoolkit-image-hit="true"] img {
+    filter: blur(14px);
+}
+
+.privacy-toolkit-high-risk {
+    border-color: var(--status-danger, #ed4245);
+    background: color-mix(in srgb, var(--status-danger, #ed4245) 12%, transparent);
+}
+.privacy-toolkit-high-risk strong {
+    color: var(--text-danger, var(--status-danger, #ed4245));
+}
+
+
+/* Consent-gated local call recorder */
+.privacy-toolkit-recorder-panel {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 100000;
+    width: min(350px, calc(100vw - 36px));
+    color: var(--text-normal);
+    background: var(--background-floating, var(--background-primary));
+    border: 1px solid var(--background-modifier-accent);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgb(0 0 0 / 35%);
+    font: 13px/1.45 var(--font-primary, sans-serif);
+    overflow: hidden;
+}
+.privacy-toolkit-recorder-hidden { display: none; }
+.privacy-toolkit-recorder-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--background-secondary);
+    border-bottom: 1px solid var(--background-modifier-accent);
+}
+.privacy-toolkit-recorder-close {
+    padding: 0 7px;
+    color: var(--interactive-normal);
+    background: transparent;
+    border: 0;
+    font-size: 20px;
+    cursor: pointer;
+}
+.privacy-toolkit-recorder-body {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 12px;
+}
+.privacy-toolkit-recorder-body p,
+.privacy-toolkit-recorder-body small { margin: 0; color: var(--text-muted); }
+.privacy-toolkit-recorder-body small { font-size: 11px; }
+.privacy-toolkit-recorder-warning {
+    padding: 9px;
+    color: var(--text-normal) !important;
+    border: 1px solid var(--status-warning, #f0b232);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--status-warning, #f0b232) 12%, transparent);
+}
+.privacy-toolkit-recorder-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    cursor: pointer;
+}
+.privacy-toolkit-recorder-consent input { margin-top: 3px; accent-color: var(--brand-500); }
+.privacy-toolkit-recorder-panel button {
+    min-height: 34px;
+    padding: 7px 10px;
+    border: 0;
+    border-radius: 6px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+.privacy-toolkit-recorder-panel button:disabled { opacity: .45; cursor: not-allowed; }
+.privacy-toolkit-recorder-primary { background: var(--brand-500, #5865f2); }
+.privacy-toolkit-recorder-secondary { background: var(--background-modifier-accent); color: var(--text-normal) !important; }
+.privacy-toolkit-recorder-stop { background: var(--status-danger, #ed4245); }
+.privacy-toolkit-recorder-text-button { background: transparent; color: var(--text-muted) !important; }
+.privacy-toolkit-recorder-live {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--status-danger, #ed4245);
+}
+.privacy-toolkit-recorder-live-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--status-danger, #ed4245);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--status-danger, #ed4245) 18%, transparent);
+}
+.privacy-toolkit-recorder-timer {
+    color: var(--text-normal);
+    font-size: 25px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    letter-spacing: .04em;
+}
+.privacy-toolkit-recorder-restore {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 100000;
+    padding: 9px 12px;
+    border: 1px solid var(--background-modifier-accent);
+    border-radius: 999px;
+    color: var(--text-normal);
+    background: var(--background-floating, var(--background-primary));
+    box-shadow: 0 6px 24px rgb(0 0 0 / 30%);
+    font: 600 12px var(--font-primary, sans-serif);
+    cursor: pointer;
+}
