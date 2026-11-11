@@ -1,5 +1,9 @@
 # PrivacyToolkit changelog
 
+## 2.5.1
+- Fixed IPv6 detection falsely redacting video timestamps and progress labels such as `1:23`, `0:45 / 2:30`, and `1:02:33`.
+- IPv6-shaped candidates are now validated as actual IPv6 literals before being flagged or redacted.
+
 ## 2.5.0
 - Added App Authorization Guard for recognizable Discord OAuth2 authorization links inside the client.
 - Added a confirmation dialog that lists requested email and identity scopes, sensitive account/server scopes, bot installation, channel message visibility, and privileged bot permission bits.
