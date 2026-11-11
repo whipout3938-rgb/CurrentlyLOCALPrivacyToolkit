@@ -22,14 +22,23 @@
     }
 
     function isValidIpv6Address(candidate) {
-        // Validate IPv6 candidates instead of treating every digit-colon
-        // sequence (for example, a video timestamp like 1:23) as an address.
-        try {
-            const parsed = new URL("http://[" + candidate + "]/");
-            return parsed.hostname.startsWith("[") && parsed.hostname.endsWith("]");
-        } catch {
-            return false;
-        }
+        // Parse a numeric IPv6 literal directly so this also works in React
+        // Native/Hermes builds where the browser URL constructor may be absent.
+        if (typeof candidate !== "string" || !candidate.includes(":")) return false;
+        if (!/^[0-9a-f:]+$/i.test(candidate)) return false;
+
+        const compressionCount = (candidate.match(/::/g) || []).length;
+        if (compressionCount > 1) return false;
+
+        const compressed = compressionCount === 1;
+        if (!compressed && (candidate.startsWith(":") || candidate.endsWith(":"))) return false;
+
+        const groups = candidate.split(":").filter(Boolean);
+        if (groups.some(group => group.length > 4 || !/^[0-9a-f]+$/i.test(group))) return false;
+
+        // Without "::" exactly eight hextets are required. With "::", at
+        // least one hextet must be elided.
+        return compressed ? groups.length < 8 : groups.length === 8;
     }
 
     function overlapsMediaTimestamp(text, start, end) {
@@ -66,7 +75,7 @@
             {
                 label: "IPv6 address",
                 kind: "ipv6",
-                pattern: /(?:(?:[a-f0-9]{1,4}:){2,7}:?[a-f0-9]{0,4}|::[a-f0-9]{1,4})/gi
+                pattern: /[0-9a-f:]*:[0-9a-f:]*/gi
             },
             {
                 label: "US SSN-like number",
