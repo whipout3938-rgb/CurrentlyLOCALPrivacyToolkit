@@ -702,12 +702,14 @@ function ExposureGuardAbout() {
                 It does not submit your watchlist to an OSINT lookup service.
             </p>
 
-            <h4>1. Identity compartmentalization</h4>
-            {settings.store.opsecCompartmentalization && <ol>
+            {settings.store.opsecCompartmentalization && <>
+                <h4>1. Identity compartmentalization</h4>
+                <ol>
                 <li>Use distinct usernames, avatars, bios, and profile links for accounts you do not want casually connected.</li>
                 <li>Avoid reusing recovery emails, phone numbers, public handles, and profile photos across unrelated identities.</li>
                 <li>Review mutual servers, friends, badges, and public profile details that can connect accounts.</li>
-            </ol>}
+                </ol>
+            </>}
             {settings.store.opsecMetadata && <>
                 <h4>2. Metadata protection</h4>
                 <ol>
@@ -1243,7 +1245,7 @@ export default definePlugin({
     name: "PrivacyToolkit",
     description: "Local privacy tools for Discord, including Exposure Guard, message warnings and redaction, group-DM controls, and consent-gated call recording. Not a guarantee against disclosure.",
     authors: [{ name: "PrivacyToolkit contributors", id: 0n }],
-    tags: ["Privacy", "Security"],
+    tags: ["Privacy", "Utility"],
     settings,
     settingsAboutComponent: ExposureGuardAbout,
     dependencies: ["MessageEventsAPI"],
