@@ -8,7 +8,7 @@
 import "./styles.css";
 
 import * as DataStore from "@api/DataStore";
-import { showNotice } from "@api/Notices";
+import { showNotice as showNoticeInternal } from "@api/Notices";
 import { definePluginSettings } from "@api/Settings";
 import definePlugin from "@utils/types";
 import { OptionType } from "@utils/types";
@@ -21,6 +21,10 @@ const PLUGIN_VERSION = "2.4.0";
 const UPDATE_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const REDACTED = "[REDACTED]";
 const WARNING_CLASS = "privacy-toolkit-warning";
+
+function showNotice(message: string) {
+    showNoticeInternal(message, "OK", () => {});
+}
 
 const settings = definePluginSettings({
     protectIncoming: {
@@ -503,15 +507,15 @@ function scanForAccessory(message: Message): string[] {
     if (settings.store.scanImageAltText) {
         for (const embed of message.embeds ?? []) {
             parts.push([
-                embed.title,
-                embed.description,
+                embed.rawTitle,
+                embed.rawDescription,
                 embed.url,
                 embed.image?.url,
                 embed.thumbnail?.url
             ].filter(Boolean).join(" "));
         }
         for (const attachment of message.attachments ?? []) {
-            parts.push([attachment.filename, attachment.description, attachment.url]
+            parts.push([attachment.filename, attachment.url]
                 .filter(Boolean).join(" "));
         }
     }
