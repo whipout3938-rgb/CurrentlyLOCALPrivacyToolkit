@@ -8,13 +8,14 @@
 import "./styles.css";
 
 import * as DataStore from "@api/DataStore";
-import { ImageGuardIcon, makeImageGuardChatBarButton, scanPendingImageUploads } from "./imageGuard";
 import { showNotice } from "@api/Notices";
 import { definePluginSettings } from "@api/Settings";
 import definePlugin from "@utils/types";
 import { OptionType } from "@utils/types";
 import type { CloudUpload, Message } from "@vencord/discord-types";
 import { ChannelStore, RestAPI, UserStore } from "@webpack/common";
+
+import { ImageGuardIcon, makeImageGuardChatBarButton, scanPendingImageUploads } from "./imageGuard";
 
 const PLUGIN_VERSION = "2.4.0";
 const UPDATE_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
@@ -1243,7 +1244,7 @@ function unmountCallRecorderPanel() {
 
 export default definePlugin({
     name: "PrivacyToolkit",
-    description: "Local privacy tools for Discord, including Exposure Guard, message warnings and redaction, group-DM controls, and consent-gated call recording. Not a guarantee against disclosure.",
+    description: "Local privacy tools for Discord, including ImageGuard, OPSEC Center, Exposure Guard, message warnings and redaction, group-DM controls, and consent-gated call recording. Not a guarantee against disclosure.",
     authors: [{ name: "PrivacyToolkit contributors", id: 0n }],
     tags: ["Privacy", "Utility"],
     settings,
