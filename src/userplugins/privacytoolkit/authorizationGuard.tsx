@@ -100,7 +100,7 @@ function collectRisks(url: URL, config: AuthorizationGuardSettings): Authorizati
             continue;
         }
         if (config.store.warnOnSensitiveScopes && [
-            "connections", "guilds", "guilds.members.read", "guilds.join",
+            "identify", "connections", "guilds", "guilds.members.read", "guilds.join",
             "role_connections.write", "dm_channels.read", "messages.read", "webhook.incoming"
         ].includes(scope)) {
             risks.push({ title: "Sensitive account or server access", detail: SCOPE_DETAILS[scope] || `Requested OAuth scope: ${scope}` });
@@ -125,10 +125,12 @@ function collectRisks(url: URL, config: AuthorizationGuardSettings): Authorizati
         }
     }
 
-    if (config.store.warnOnBotMessageAccess && isBot && hasPermission(permissions, 10) && hasPermission(permissions, 16)) {
+    if (config.store.warnOnBotMessageAccess && isBot && hasPermission(permissions, 10)) {
         risks.push({
             title: "Channel message visibility",
-            detail: "The bot requests View Channel and Read Message History. It may read messages in channels where it has both permissions; this does not automatically grant access to every private channel or your personal DMs."
+            detail: hasPermission(permissions, 16)
+                ? "The bot requests View Channel and Read Message History. It may read messages and available history in channels where its role has access; this does not automatically grant access to every private channel or your personal DMs."
+                : "The bot requests View Channel. It may receive new messages in channels where its role has access; older message history is controlled separately by Read Message History."
         });
     }
 
