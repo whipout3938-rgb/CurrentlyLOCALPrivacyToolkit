@@ -111,7 +111,7 @@ test("honours the scan enable switch", () => {
 });
 
 test("scans configured custom protected terms", () => {
-    const h = createHarness({ protectedTerms: "MyUniqueHandle\\nPrivate School" });
+    const h = createHarness({ protectedTerms: "MyUniqueHandle\nPrivate School" });
     h.send(["channel-id", { content: "MyUniqueHandle was mentioned" }]);
     assert.equal(h.messages.length, 1);
     assert.match(h.messages[0], /custom protected term/);
