@@ -33,7 +33,7 @@ A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides b
 - PrivacyToolkit can reduce accidental disclosure through local warnings and best-effort redaction, but it cannot guarantee that personal information will not be shared. 
 ## Download
 
-The published **v2.2.1** pre-release contains the earlier PrivacyToolkit build. The new **v2.4.0** ImageGuard and OPSEC Center source is being prepared for a tester pre-release and should be treated as experimental until the Vencord compatibility workflow and real-client testing have completed.
+The published **v2.2.1** pre-release contains the earlier PrivacyToolkit build. The **v2.4.0** ImageGuard and OPSEC Center tester pre-release is gated on a successful Vencord type-check and build; it still requires real-client testing by users.
 
 - [Published releases](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases)
 - [Download the current main-branch source archive for testing](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/archive/refs/heads/main.zip)
