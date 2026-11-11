@@ -133,3 +133,41 @@
     font: 600 12px var(--font-primary, sans-serif);
     cursor: pointer;
 }
+
+/* Exposure Guard settings guide */
+.privacy-toolkit-about {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: var(--text-normal);
+    line-height: 1.5;
+}
+.privacy-toolkit-about h3,
+.privacy-toolkit-about h4,
+.privacy-toolkit-about p {
+    margin: 0;
+}
+.privacy-toolkit-about h3 {
+    font-size: 16px;
+    font-weight: 700;
+}
+.privacy-toolkit-about h4 {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 700;
+}
+.privacy-toolkit-about ol {
+    margin: 0;
+    padding-left: 22px;
+}
+.privacy-toolkit-about li {
+    margin: 5px 0;
+}
+.privacy-toolkit-about a {
+    color: var(--text-link);
+    text-decoration: underline;
+}
+.privacy-toolkit-about-note {
+    color: var(--text-muted);
+    font-size: 12px;
+}
