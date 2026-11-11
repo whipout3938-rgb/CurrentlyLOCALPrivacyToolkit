@@ -9,13 +9,19 @@ A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides b
 - Custom protected terms and user-supplied IPv4/IPv6 values.
 - Local matching for a short list of known IP-logging links. The list is incomplete and does not resolve redirects.
 - Alerts when a message combines multiple personal-data signals.
-- Attachment metadata and image alt-text checks; experimental on-device OCR where supported.
+- **ImageGuard**: automatic pre-upload checks plus a manual chat-bar scan for pending images. It checks EXIF/GPS metadata, visible text with on-device OCR where supported, and QR payloads where BarcodeDetector is available.
+- **OPSEC Center**: six defensive modules for identity compartmentalization, metadata, links, digital footprint, account security, and exposure response.
+- Local link warnings for common tracking parameters, suspicious IP-logging domains, and public social-profile URLs.
 - Group-DM auto-leave with a trusted-channel allowlist. This reacts after Discord adds the account and cannot prevent the initial server-side addition.
 - Optional GitHub Releases update notifications. The checker notifies only; updating still requires replacing source, rebuilding Vencord, injecting, and restarting.
 - Consent-gated local call recorder with an Arm Call action, visible recording timer, stop control, and three audio-only WebM outputs: combined, microphone-only, and desktop/system-audio-only.
 
 ## Important limitations
 
+- ImageGuard depends on Vencord's current `uploadFiles` path for automatic scanning. If Discord changes that internal method, the upload patch may stop applying; the manual scan button is available as a fallback.
+- OCR and QR scanning depend on experimental/browser APIs exposed by the user's Discord/Electron build. Unsupported checks are reported as unavailable. OCR cannot identify every visual clue, face, landmark, reflection, or background detail.
+- ImageGuard inspects the original local file before upload. It warns by default and does not strip metadata, blur pixels, or rewrite images. Optional blocking removes flagged images from the pending draft.
+- EXIF detection is heuristic and may miss unusual metadata layouts. A clean scan is not a safety guarantee.
 - Detection is heuristic and may miss information or produce false positives. Incoming DOM redaction is best-effort; Discord re-renders, embeds, accessibility views, quoted messages, and other plugins may expose unredacted content.
 - PrivacyToolkit does not retrieve or collect anyone's IP address.
 - Group-DM protection cannot stop the initial server-side addition and may leave a brief exposure window. The Discord request may also fail.
@@ -27,12 +33,12 @@ A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides b
 - The plugin can prevent you from sending personal info to others. 
 ## Download
 
-The published **v2.2.1** pre-release contains the earlier PrivacyToolkit build and does not include Exposure Guard 2.3.0.
+The published **v2.2.1** pre-release contains the earlier PrivacyToolkit build. The new **v2.4.0** ImageGuard and OPSEC Center source is being prepared for a tester pre-release and should be treated as experimental until the Vencord compatibility workflow and real-client testing have completed.
 
 - [Published releases](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases)
 - [Download the current main-branch source archive for testing](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/archive/refs/heads/main.zip)
 
-The 2.3.0 Exposure Guard changes are committed to `main` but are not packaged as a release yet. To preview them, extract the main-branch source archive and copy `src/userplugins/privacytoolkit/` into your Vencord checkout. Build and test it locally before using it as a daily release.
+The 2.3.0 Exposure Guard and 2.4.0 ImageGuard/OPSEC Center changes are committed to `main`. Check the release page for the tester build once the compatibility workflow succeeds. To preview them, extract the main-branch source archive and copy `src/userplugins/privacytoolkit/` into your Vencord checkout. Build and test it locally before using it as a daily release.
 
 ## Install
 
@@ -44,6 +50,27 @@ The 2.3.0 Exposure Guard changes are committed to `main` but are not packaged as
 6. Review the settings after the rename. Custom terms, protected IPs, trusted group IDs, and the update repository may need to be entered again.
 
 See the [Vencord custom plugin guide](https://docs.vencord.dev/installing/custom-plugins/).
+
+## ImageGuard
+
+ImageGuard defaults to **both** automatic and manual scanning. Automatic scanning uses Vencord's pending upload objects to inspect the original local `File` before upload begins. The manual shield button appears beside the message composer while image attachments are pending. The scanner checks for EXIF/GPS metadata, visible text using `TextDetector` where available, and QR payloads using `BarcodeDetector` where available.
+
+By default, ImageGuard only warns. The optional **Block image uploads with findings** setting removes flagged files from the pending message draft; it does not delete the original file from disk. If the current Discord/Electron build does not expose OCR or QR APIs, the scanner reports that those checks were unavailable. It never reports unavailable checks as clean.
+
+ImageGuard does not upload images to external services, does not silently edit image pixels, and does not currently strip metadata or blur detected regions. Review images manually for maps, landmarks, reflections, screens, notifications, and other visual clues.
+
+## OPSEC Center
+
+OPSEC Center includes six optional guidance modules, all enabled by default:
+
+1. Identity compartmentalization
+2. Metadata protection
+3. Link privacy and tracking parameters
+4. Digital-footprint review
+5. Account-security audit
+6. Exposure response
+
+The modules are defensive checklists and local warnings. They do not scrape other people, query OSINT services, or make accounts untraceable.
 
 ## Exposure Guard
 
@@ -71,6 +98,10 @@ These controls belong to Discord, Google, and data-broker websites; PrivacyToolk
 7. Avoid reusing the same usernames, avatars, bios, or contact details across unrelated accounts. Add any aliases you still use to the local Custom protected terms list so the plugin can warn when they appear in Discord messages.
 
 Review Vencord's own settings-sync controls before storing highly sensitive watchlist values. PrivacyToolkit does not send the watchlist to an OSINT lookup service.
+
+## Feedback and tester reports
+
+Use [GitHub Issues](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/issues/new/choose) to send feedback directly to the PrivacyToolkit makers. Include the plugin version, Vencord build date, reproduction steps, and error text. Do not post real personal information, Discord tokens, private recordings, or unredacted images.
 
 ## Configure update notifications
 
