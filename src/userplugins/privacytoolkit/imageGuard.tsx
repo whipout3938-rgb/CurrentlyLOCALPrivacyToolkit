@@ -93,19 +93,30 @@ async function scanImageFile(file: File, config: ImageGuardConfig, scanText: Sca
             result.checks.push("metadata inspection completed");
         }
 
-        let bitmap: ImageBitmap | undefined;
+        let bitmap: ImageBitmap;
         try {
             bitmap = await createImageBitmap(file);
+        } catch {
+            result.checks.push("image could not be decoded for pixel analysis");
+            result.findings = [...new Set(result.findings)];
+            return result;
+        }
+
+        try {
             const TextDetectorCtor = (window as any).TextDetector;
             if (TextDetectorCtor) {
-                const detector = new TextDetectorCtor();
-                const blocks = await detector.detect(bitmap);
-                const visibleText = blocks.map((block: { rawValue?: string; }) => block.rawValue || "").filter(Boolean).join("\n");
-                if (visibleText) {
-                    const matches = scanText(visibleText).labels;
-                    result.findings.push(...matches.map(label => "visible image text: " + label));
+                try {
+                    const detector = new TextDetectorCtor();
+                    const blocks = await detector.detect(bitmap);
+                    const visibleText = blocks.map((item: { rawValue?: string; }) => item.rawValue || "").filter(Boolean).join("\n");
+                    if (visibleText) {
+                        const matches = scanText(visibleText).labels;
+                        result.findings.push(...matches.map(label => "visible image text: " + label));
+                    }
+                    result.checks.push("on-device OCR completed");
+                } catch {
+                    result.checks.push("OCR unavailable or failed in this Discord/Electron build");
                 }
-                result.checks.push("on-device OCR completed");
             } else {
                 result.checks.push("OCR unavailable in this Discord/Electron build");
             }
@@ -129,7 +140,7 @@ async function scanImageFile(file: File, config: ImageGuardConfig, scanText: Sca
                 result.checks.push("QR scanning unavailable in this Discord/Electron build");
             }
         } finally {
-            bitmap?.close();
+            bitmap.close();
         }
     } catch {
         result.checks.push("file could not be read or decoded locally");
