@@ -141,17 +141,18 @@ async function inspectUploads(uploads: CloudUpload[], config: ImageGuardConfig, 
     const images = uploads.filter(upload => upload.isImage && upload.item?.file instanceof File);
     if (!images.length) return;
 
-    const results = await Promise.all(images.map(upload => scanImageFile(upload.item.file, config, scanText)));
-    const flagged = results.filter(result => result.findings.length);
-    const incomplete = results.some(result => result.checks.some(check => /unavailable|could not|failed/i.test(check)));
+    const results = await Promise.all(images.map(async upload => ({
+        upload,
+        result: await scanImageFile(upload.item.file, config, scanText)
+    })));
+    const flagged = results.filter(item => item.result.findings.length);
+    const incomplete = results.some(item => item.result.checks.some(check => /unavailable|could not|failed/i.test(check)));
 
     if (flagged.length) {
-        const details = flagged.map(result => result.filename + ": " + result.findings.join(", ")).join(" | ");
+        const details = flagged.map(item => item.result.filename + ": " + item.result.findings.join(", ")).join(" | ");
         showNotice("ImageGuard found possible exposure: " + details);
         if (config.store.imageGuardBlockOnFindings) {
-            for (const upload of images) {
-                if (flagged.some(result => result.filename === upload.filename)) upload.removeFromMsgDraft();
-            }
+            for (const item of flagged) item.upload.removeFromMsgDraft();
             showNotice("ImageGuard removed flagged image(s) from the pending draft. Review them before re-adding.");
         }
     } else if (incomplete) {
