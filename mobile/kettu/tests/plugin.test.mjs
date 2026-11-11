@@ -110,6 +110,13 @@ test("honours the scan enable switch", () => {
     assert.equal(h.messages.length, 0);
 });
 
+test("scans configured custom protected terms", () => {
+    const h = createHarness({ protectedTerms: "MyUniqueHandle\\nPrivate School" });
+    h.send(["channel-id", { content: "MyUniqueHandle was mentioned" }]);
+    assert.equal(h.messages.length, 1);
+    assert.match(h.messages[0], /custom protected term/);
+});
+
 test("removes its send hook when unloaded", () => {
     const h = createHarness();
     h.plugin.onUnload();
