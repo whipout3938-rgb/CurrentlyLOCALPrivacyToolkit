@@ -46,6 +46,7 @@ Exposure Guard adds local warnings intended to reduce accidental identity linkin
 
 - Uses the local **Custom protected terms** list for usernames/handles reused elsewhere, aliases, names, locations, schools, employers, and other identifiers you choose.
 - Recognizes links to common public profile paths on services such as Instagram, TikTok, X, Reddit, GitHub, Twitch, YouTube, Steam, Threads, Facebook, and LinkedIn. These links are flagged for review rather than automatically removed.
+- Optionally detects your current Discord numeric user ID so it can be flagged if you accidentally paste it into a message.
 - Warns when a message combines multiple personal-data signals or pairs a profile link with another identifying clue.
 - Runs before message send and edit. Existing redaction can replace configured sensitive terms; optional **Block high-risk messages** holds a draft when a high-risk combination is found.
 - Adds a privacy checklist in the plugin's settings About section.
