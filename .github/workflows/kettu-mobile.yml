@@ -1,0 +1,43 @@
+name: Kettu mobile plugin validation
+
+on:
+  push:
+    branches:
+      - main
+      - feature/kettu-mobile-mvp
+    paths:
+      - "mobile/kettu/**"
+      - ".github/workflows/kettu-mobile.yml"
+  pull_request:
+    paths:
+      - "mobile/kettu/**"
+      - ".github/workflows/kettu-mobile.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run mobile plugin smoke tests
+        working-directory: mobile/kettu
+        run: npm test
+
+      - name: Rebuild distributable
+        working-directory: mobile/kettu
+        run: npm run build
+
+      - name: Validate generated JavaScript
+        working-directory: mobile/kettu
+        run: node --check builds/privacytoolkit-mobile/index.js
+
+      - name: Verify generated files are committed
+        run: git diff --exit-code -- mobile/kettu/builds
