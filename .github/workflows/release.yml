@@ -2,6 +2,7 @@ name: Test and package PrivacyToolkit release
 
 on:
   push:
+    branches: [main]
     tags:
       - "v*"
   workflow_dispatch:
@@ -22,6 +23,10 @@ permissions:
 
 jobs:
   release:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.ref_type == 'tag' ||
+      (github.ref_type == 'branch' && github.event.head_commit.message == 'Prepare PrivacyToolkit v2.4.0 release')
     runs-on: ubuntu-latest
     steps:
       - name: Check out PrivacyToolkit
@@ -74,9 +79,12 @@ jobs:
           if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
             TAG_NAME="$INPUT_TAG"
             PRERELEASE="$INPUT_PRERELEASE"
-          else
+          elif [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
             TAG_NAME="$GITHUB_REF_NAME"
             if [[ "$TAG_NAME" == "v2.4.0" ]]; then PRERELEASE="true"; else PRERELEASE="false"; fi
+          else
+            TAG_NAME="v2.4.0"
+            PRERELEASE="true"
           fi
           if [[ ! "$TAG_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
             echo "Invalid release tag: $TAG_NAME"
