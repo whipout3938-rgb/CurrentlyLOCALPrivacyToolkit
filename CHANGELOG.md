@@ -2,6 +2,7 @@
 
 ## 2.3.0
 - Added Exposure Guard with local warnings for common social-profile URLs and combinations of identifying clues.
+- Added optional automatic detection of the current Discord account ID in messages.
 - Expanded the local identity watchlist guidance for reused usernames, handles, aliases, locations, schools, employers, and other identifiers.
 - Connected outgoing message and edit scanning to Vencord's Message Events API; configured sensitive content can be redacted before send, and high-risk drafts can optionally be held.
 - Connected message accessories so messages can display local detection warnings.
