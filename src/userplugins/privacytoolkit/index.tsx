@@ -683,12 +683,18 @@ function PrivacyToolkitAccessory({ message }: { message: Message }) {
 function ExposureGuardAbout() {
     return (
         <div className="privacy-toolkit-about">
-            <h3>Exposure Guard — reduce account discoverability</h3>
+            <h3>OPSEC Center — reduce accidental exposure</h3>
             <p>
-                Exposure Guard works locally in your Discord client. Add usernames, aliases, profile handles,
-                locations, schools, or employers you want protected to <strong>Custom protected terms</strong>.
-                It can warn about recognizable public profile links and combinations of clues before you share them.
-                It can also watch your current numeric Discord user ID to catch accidental pasting.
+                OPSEC Center combines local detection with six defensive privacy modules. All ImageGuard analysis is local:
+                automatic scans inspect pending image files before upload when the Vencord upload hook matches, and a manual
+                scan button appears beside the composer when images are attached. OCR and QR detection depend on the
+                Discord/Electron browser APIs available in your build. A missing API is reported as an unavailable check,
+                never as a clean result.
+            </p>
+            <p>
+                ImageGuard checks visible text where on-device OCR exists, QR payloads where BarcodeDetector exists,
+                and EXIF/GPS metadata in original image files. It warns by default and does not modify files. Optional
+                blocking removes flagged images from the pending draft; it is disabled by default.
             </p>
             <p>
                 It does not search the web, query OSINT services, remove public records, hide your Discord account
@@ -696,6 +702,55 @@ function ExposureGuardAbout() {
                 It does not submit your watchlist to an OSINT lookup service.
             </p>
 
+            <h4>1. Identity compartmentalization</h4>
+            {settings.store.opsecCompartmentalization && <ol>
+                <li>Use distinct usernames, avatars, bios, and profile links for accounts you do not want casually connected.</li>
+                <li>Avoid reusing recovery emails, phone numbers, public handles, and profile photos across unrelated identities.</li>
+                <li>Review mutual servers, friends, badges, and public profile details that can connect accounts.</li>
+            </ol>}
+            {settings.store.opsecMetadata && <>
+                <h4>2. Metadata protection</h4>
+                <ol>
+                    <li>ImageGuard inspects local image files for EXIF and GPS metadata before upload when enabled.</li>
+                    <li>ImageGuard currently warns; it does not silently rewrite image pixels or strip metadata. Remove flagged metadata from an edited copy before sharing.</li>
+                    <li>Screenshots can reveal location through visible maps, windows, reflections, notifications, and background details even without metadata.</li>
+                </ol>
+            </>}
+            {settings.store.opsecLinks && <>
+                <h4>3. Link privacy</h4>
+                <ol>
+                    <li>Review links containing tracking parameters such as utm_*, fbclid, gclid, or referral IDs before sharing.</li>
+                    <li>Be cautious with unfamiliar redirects, URL shorteners, file-hosting links, and QR codes. QR payload inspection depends on browser support.</li>
+                    <li>Do not open suspicious links just to test them. PrivacyToolkit uses local pattern checks and does not resolve or visit links.</li>
+                </ol>
+            </>}
+            {settings.store.opsecFootprint && <>
+                <h4>4. Digital-footprint review</h4>
+                <ol>
+                    <li>Search for your current and former usernames, aliases, public email addresses, and profile-photo reuse.</li>
+                    <li>Use <a href="https://myactivity.google.com/results-about-you" target="_blank" rel="noreferrer">Google Results about you</a> to monitor eligible contact details and request removal from Search.</li>
+                    <li>Follow the <a href="https://consumer.ftc.gov/articles/what-know-about-people-search-sites-sell-your-information" target="_blank" rel="noreferrer">FTC people-search opt-out guide</a> and submit removal requests directly to data brokers.</li>
+                </ol>
+            </>}
+            {settings.store.opsecAccount && <>
+                <h4>5. Account-security audit</h4>
+                <ol>
+                    <li>Enable a passkey or authenticator-based multi-factor authentication where supported; store recovery codes offline.</li>
+                    <li>Review active sessions, authorized applications, connected accounts, and bot/app permissions; revoke anything you do not recognize.</li>
+                    <li>Use a unique password from a password manager and secure the email account used for recovery.</li>
+                    <li>Review Discord's privacy, friend-request, server-DM, and activity-sharing settings periodically.</li>
+                </ol>
+            </>}
+            {settings.store.opsecResponse && <>
+                <h4>6. Exposure response</h4>
+                <ol>
+                    <li>Stop resharing the exposed content. Save URLs, timestamps, and evidence privately without reposting personal information.</li>
+                    <li>Remove or edit the original post where possible, then ask moderators or the hosting service to remove copies. Search caches and mirrors may persist.</li>
+                    <li>If a password, token, or recovery code was exposed, revoke it immediately and secure the affected account from a trusted device.</li>
+                    <li>If a home address, phone number, or credible threat is involved, tell a trusted person and contact the relevant platform or local authorities when appropriate.</li>
+                    <li>Recheck linked accounts, recovery methods, sessions, and public profiles for follow-on exposure.</li>
+                </ol>
+            </>}
             <h4>Discord account privacy checklist</h4>
             <ol>
                 <li>
@@ -743,6 +798,12 @@ function ExposureGuardAbout() {
             <p className="privacy-toolkit-about-note">
                 Privacy settings and removal requests must be completed by you on Discord, Google, and the relevant data-broker websites.
                 PrivacyToolkit provides reminders and local warnings; it cannot change those services' account settings for you.
+            </p>
+            <h4>Feedback and bug reports</h4>
+            <p>
+                <a href="https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/issues/new/choose" target="_blank" rel="noreferrer">Send feedback to the PrivacyToolkit makers on GitHub</a>.
+                Include your PrivacyToolkit version, Vencord build date, steps to reproduce, and any error text. Never attach
+                real personal information, account tokens, private recordings, or unredacted images.
             </p>
         </div>
     );
