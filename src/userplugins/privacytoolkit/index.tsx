@@ -15,7 +15,7 @@ import { OptionType } from "@utils/types";
 import type { Message } from "@vencord/discord-types";
 import { ChannelStore, RestAPI, UserStore } from "@webpack/common";
 
-const PLUGIN_VERSION = "2.2.1";
+const PLUGIN_VERSION = "2.3.0";
 const UPDATE_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const REDACTED = "[REDACTED]";
 const WARNING_CLASS = "privacy-toolkit-warning";
@@ -86,10 +86,26 @@ const settings = definePluginSettings({
         description: "Detect custom protected identity terms and social handles you add below.",
         default: true
     },
+    exposureGuardEnabled: {
+        type: OptionType.BOOLEAN,
+        description: "Enable Exposure Guard: warn about public profile links and combinations that could connect separate online identities. No external OSINT searches are performed.",
+        default: true
+    },
+    detectSocialProfileLinks: {
+        type: OptionType.BOOLEAN,
+        description: "Warn when a message contains a link to a recognizable public social profile. Links are flagged for review, not automatically removed.",
+        default: true
+    },
+    blockHighRiskMessages: {
+        type: OptionType.BOOLEAN,
+        description: "Hold a message or edit when Exposure Guard finds a high-risk combination. Disabled by default to avoid blocking legitimate messages.",
+        default: false
+    },
     protectedTerms: {
         type: OptionType.STRING,
-        description: "Custom protected terms, usernames, aliases, locations, or other identifiers. Separate entries with commas or new lines.",
-        default: ""
+        description: "Local identity watchlist: usernames/handles reused elsewhere, aliases, names, schools, employers, neighborhoods, and other identifiers you want flagged. Separate entries with commas or new lines.",
+        default: "",
+        multiline: true
     },
     redactIncomingDom: {
         type: OptionType.BOOLEAN,
@@ -289,7 +305,7 @@ async function checkForUpdates() {
     }
 }
 
-type Finding = { label: string; pattern: RegExp };
+type Finding = { label: string; pattern: RegExp; redact?: boolean };
 
 function customTerms(): string[] {
     return settings.store.protectedTerms
@@ -356,6 +372,14 @@ function getFindings(): Finding[] {
         }
     }
 
+    if (s.exposureGuardEnabled && s.detectSocialProfileLinks) {
+        findings.push({
+            label: "public social profile link",
+            pattern: /\b(?:https?:\/\/)?(?:www\.)?(?:instagram\.com\/[a-z0-9._]{2,}|tiktok\.com\/@?[a-z0-9._]{2,}|(?:x|twitter)\.com\/@?[a-z0-9_]{2,}|reddit\.com\/(?:user|u)\/[a-z0-9_-]{2,}|github\.com\/[a-z0-9-]{2,}|twitch\.tv\/[a-z0-9_]{2,}|youtube\.com\/@[\w.-]{2,}|steamcommunity\.com\/(?:id|profiles)\/[a-z0-9-]{2,}|threads\.net\/@[\w.-]{2,}|facebook\.com\/[a-z0-9.]{2,}|linkedin\.com\/in\/[a-z0-9-]{2,})(?:[/?#][^\s<>()]*)?/gi,
+            redact: false
+        });
+    }
+
     return findings;
 }
 
@@ -370,7 +394,7 @@ function scanText(input: string): { text: string; labels: string[]; changed: boo
             labels.add(finding.label);
             if (finding.label !== "known IP-logging link") personalDataSignals.add(finding.label);
             finding.pattern.lastIndex = 0;
-            output = output.replace(finding.pattern, REDACTED);
+            if (finding.redact !== false) output = output.replace(finding.pattern, REDACTED);
         }
     }
 
@@ -532,6 +556,27 @@ function getOutgoingReplacement(content: string): { content: string; labels: str
     return { content: result.text, labels: result.labels };
 }
 
+function inspectOutgoingMessage(messageObj: { content: string; }): { cancel: boolean } | void {
+    if (!settings.store.protectOutgoing && !settings.store.exposureGuardEnabled) return;
+
+    const result = scanText(messageObj.content || "");
+    const highRisk = result.labels.includes("possible doxxing pattern");
+
+    // A configured high-risk hold preserves the draft in the composer for review.
+    if (settings.store.exposureGuardEnabled && settings.store.blockHighRiskMessages && highRisk) {
+        showNotice("Exposure Guard held this message or edit. Review the identity clues and remove anything you do not intend to share.");
+        return { cancel: true };
+    }
+
+    if (settings.store.protectOutgoing && result.changed) {
+        messageObj.content = result.text;
+        const labels = result.labels.filter(label => label !== "possible doxxing pattern");
+        showNotice(\`PrivacyToolkit redacted detected information before sending: \${labels.join(" · ") || "sensitive details"}.\`);
+    } else if (settings.store.exposureGuardEnabled && result.labels.length) {
+        showNotice(\`Exposure Guard warning: \${result.labels.join(" · ")}. This message is still being sent; review it before sharing.\`);
+    }
+}
+
 function PrivacyToolkitAccessory({ message }: { message: Message }) {
     const labels = scanForAccessory(message);
     if (!labels.length) return null;
@@ -548,6 +593,73 @@ function PrivacyToolkitAccessory({ message }: { message: Message }) {
     );
 }
 
+
+function ExposureGuardAbout() {
+    return (
+        <div className="privacy-toolkit-about">
+            <h3>Exposure Guard — reduce account discoverability</h3>
+            <p>
+                Exposure Guard works locally in your Discord client. Add usernames, aliases, profile handles,
+                locations, schools, or employers you want protected to <strong>Custom protected terms</strong>.
+                It can warn about recognizable public profile links and combinations of clues before you share them.
+            </p>
+            <p>
+                It does not search the web, query OSINT services, remove public records, hide your Discord account
+                from Discord, or prevent another person from searching for information that is already public.
+                It does not submit your watchlist to an OSINT lookup service.
+            </p>
+
+            <h4>Discord account privacy checklist</h4>
+            <ol>
+                <li>
+                    <strong>Profile Privacy:</strong> Open User Settings → Data &amp; Privacy → Profile Privacy
+                    and consider <strong>Friends Only</strong>. Your avatar, banner, display name, username,
+                    server tag, account age, and mutual friends/servers may still be visible.
+                </li>
+                <li>
+                    <strong>Friend Requests:</strong> Open User Settings → Content &amp; Social → Friend Requests.
+                    Disable Everyone, Friends of Friends, and Server Members as appropriate; disabling all three
+                    prevents new friend requests from those categories.
+                </li>
+                <li>
+                    <strong>Server DMs:</strong> Under Content &amp; Social → Social Permissions, turn off DMs
+                    from server members and apply the change to existing servers when Discord offers that option.
+                    Check per-server privacy settings too.
+                </li>
+                <li>
+                    <strong>Activity Sharing:</strong> Review Activity Privacy separately. Profile Privacy and
+                    Activity Sharing are distinct controls.
+                </li>
+            </ol>
+            <p>
+                <a href="https://support.discord.com/hc/en-us/articles/38859942749463-Profile-Privacy-Setting-on-Discord" target="_blank" rel="noreferrer">Discord: Profile Privacy settings</a>
+                <br />
+                <a href="https://support.discord.com/hc/en-us/articles/217916488-Blocking-Privacy-Settings" target="_blank" rel="noreferrer">Discord: Blocking, DMs, and friend requests</a>
+            </p>
+
+            <h4>Reduce your public-data footprint</h4>
+            <ol>
+                <li>
+                    Use <a href="https://myactivity.google.com/results-about-you" target="_blank" rel="noreferrer">Google Results about you</a>
+                    to monitor search results and request removal of eligible contact details or government ID information.
+                    Search removal does not erase the original webpage.
+                </li>
+                <li>
+                    Follow the <a href="https://consumer.ftc.gov/articles/what-know-about-people-search-sites-sell-your-information" target="_blank" rel="noreferrer">FTC people-search opt-out guide</a>
+                    to submit opt-out requests directly to data-broker sites. Public records may remain available and information can reappear.
+                </li>
+                <li>
+                    Avoid reusing the same username, avatar, bio, or contact details across public and personal accounts.
+                    Add reused handles to Custom protected terms so Exposure Guard can flag them when you are about to share them.
+                </li>
+            </ol>
+            <p className="privacy-toolkit-about-note">
+                Privacy settings and removal requests must be completed by you on Discord, Google, and the relevant data-broker websites.
+                PrivacyToolkit provides reminders and local warnings; it cannot change those services' account settings for you.
+            </p>
+        </div>
+    );
+}
 
 // -----------------------------------------------------------------------------
 // Consent-gated local call recorder
@@ -981,10 +1093,23 @@ function unmountCallRecorderPanel() {
 
 export default definePlugin({
     name: "PrivacyToolkit",
-    description: "Local privacy tools for Discord: best-effort message scanning and redaction, suspicious-link alerts, group-DM controls, and consent-gated call recording. Not a guarantee against disclosure.",
+    description: "Local privacy tools for Discord, including Exposure Guard, message warnings and redaction, group-DM controls, and consent-gated call recording. Not a guarantee against disclosure.",
     authors: [{ name: "PrivacyToolkit contributors", id: 0n }],
     tags: ["Privacy", "Security"],
     settings,
+    settingsAboutComponent: ExposureGuardAbout,
+
+    onBeforeMessageSend(_channelId, messageObj) {
+        return inspectOutgoingMessage(messageObj);
+    },
+
+    onBeforeMessageEdit(_channelId, _messageId, messageObj) {
+        return inspectOutgoingMessage(messageObj);
+    },
+
+    renderMessageAccessory: ({ message }: { message: Message }) => (
+        <PrivacyToolkitAccessory message={message} />
+    ),
 
     start() {
         if (settings.store.protectIncoming) startDomProtection();
