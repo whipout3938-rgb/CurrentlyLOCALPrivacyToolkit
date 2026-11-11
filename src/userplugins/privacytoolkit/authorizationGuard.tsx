@@ -100,7 +100,7 @@ function collectRisks(url: URL, config: AuthorizationGuardSettings): Authorizati
             continue;
         }
         if (config.store.warnOnSensitiveScopes && [
-            "identify", "connections", "guilds", "guilds.members.read", "guilds.join",
+            "identify", "identify", "connections", "guilds", "guilds.members.read", "guilds.join",
             "role_connections.write", "dm_channels.read", "messages.read", "webhook.incoming"
         ].includes(scope)) {
             risks.push({ title: "Sensitive account or server access", detail: SCOPE_DETAILS[scope] || `Requested OAuth scope: ${scope}` });
@@ -215,7 +215,7 @@ function openAuthorizationWarning(url: URL, risks: AuthorizationRisk[], element:
 }
 
 export function startAuthorizationGuard(config: AuthorizationGuardSettings) {
-    if (installedHandler || !config.store.appAuthorizationGuardEnabled) return;
+    if (installedHandler) return;
 
     installedHandler = (event: MouseEvent) => {
         if (bypassNextAuthorizationClick) {
