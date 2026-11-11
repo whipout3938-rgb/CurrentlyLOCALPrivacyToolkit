@@ -18,7 +18,7 @@ import { ChannelStore, RestAPI, UserStore } from "@webpack/common";
 import { ImageGuardIcon, makeImageGuardChatBarButton, scanPendingImageUploads } from "./imageGuard";
 import { startAuthorizationGuard, stopAuthorizationGuard } from "./authorizationGuard";
 
-const PLUGIN_VERSION = "2.5.0";
+const PLUGIN_VERSION = "2.5.1";
 const UPDATE_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const REDACTED = "[REDACTED]";
 const WARNING_CLASS = "privacy-toolkit-warning";
@@ -498,6 +498,18 @@ function getFindings(): Finding[] {
     return findings;
 }
 
+function isValidIpv6Address(candidate: string): boolean {
+    // The IPv6-shaped detector also matches media timestamps such as 1:23 and
+    // 1:02:33. Let the platform URL parser validate the candidate as a real
+    // IPv6 literal before treating it as personal data.
+    try {
+        const parsed = new URL(`http://[${candidate}]/`);
+        return parsed.hostname.startsWith("[") && parsed.hostname.endsWith("]");
+    } catch {
+        return false;
+    }
+}
+
 function scanText(input: string): { text: string; labels: string[]; changed: boolean } {
     let output = input;
     const labels = new Set<string>();
@@ -507,11 +519,25 @@ function scanText(input: string): { text: string; labels: string[]; changed: boo
         // Detect against the original message so an earlier redaction cannot hide
         // a second overlapping clue (for example, a protected handle in a profile URL).
         finding.pattern.lastIndex = 0;
-        if (finding.pattern.test(input)) {
+        const matches = Array.from(input.matchAll(finding.pattern));
+        // IPv6-shaped text is only a candidate: validate it as a real IPv6
+        // literal so video timestamps (for example, 1:23 / 2:30) stay visible.
+        const actionableMatches = finding.label === "IPv6-like address"
+            ? matches.filter(match => isValidIpv6Address(match[0]))
+            : matches;
+
+        if (actionableMatches.length) {
             labels.add(finding.label);
             if (finding.label !== "known IP-logging link") personalDataSignals.add(finding.label);
-            finding.pattern.lastIndex = 0;
-            if (finding.redact !== false) output = output.replace(finding.pattern, REDACTED);
+            if (finding.redact !== false) {
+                if (finding.label === "IPv6-like address") {
+                    output = output.replace(finding.pattern, match =>
+                        isValidIpv6Address(match) ? REDACTED : match
+                    );
+                } else {
+                    output = output.replace(finding.pattern, REDACTED);
+                }
+            }
         }
     }
 
