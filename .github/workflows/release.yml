@@ -1,0 +1,36 @@
+name: Package PrivacyToolkit release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Build installable source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/package/privacytoolkit
+          cp src/userplugins/privacytoolkit/index.tsx dist/package/privacytoolkit/
+          cp src/userplugins/privacytoolkit/styles.css dist/package/privacytoolkit/
+          cp README.md CHANGELOG.md LICENSE dist/package/
+          cd dist/package
+          zip -r "../PrivacyToolkit-${GITHUB_REF_NAME}.zip" .
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "dist/PrivacyToolkit-${GITHUB_REF_NAME}.zip" \
+            --title "PrivacyToolkit ${GITHUB_REF_NAME}" \
+            --generate-notes
