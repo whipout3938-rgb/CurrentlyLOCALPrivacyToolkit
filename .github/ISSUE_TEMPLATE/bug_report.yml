@@ -1,0 +1,62 @@
+name: Bug report
+description: Report a PrivacyToolkit problem to the plugin makers.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Please do not include personal information, Discord tokens, private recordings, or unredacted images."
+  - type: input
+    id: plugin-version
+    attributes:
+      label: PrivacyToolkit version
+      placeholder: "2.4.0"
+    validations:
+      required: true
+  - type: input
+    id: vencord-version
+    attributes:
+      label: Vencord version or build date
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Feature area
+      options:
+        - ImageGuard automatic scan
+        - ImageGuard manual scan
+        - Image metadata / OCR / QR
+        - OPSEC Center
+        - Exposure Guard / message scanning
+        - Group DM protection
+        - Call recorder
+        - Update checker
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error text or relevant logs
+      description: Remove tokens, IDs, private URLs, and personal information before posting.
+    validations:
+      required: false
