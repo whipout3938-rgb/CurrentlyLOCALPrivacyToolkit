@@ -40,6 +40,32 @@ Download **`privacytoolkit.zip`** from the [latest GitHub release](https://githu
 
 See the [Vencord custom plugin guide](https://docs.vencord.dev/installing/custom-plugins/).
 
+## Exposure Guard
+
+Exposure Guard adds local warnings intended to reduce accidental identity linking through Discord messages. It:
+
+- Uses the local **Custom protected terms** list for usernames/handles reused elsewhere, aliases, names, locations, schools, employers, and other identifiers you choose.
+- Recognizes links to common public profile paths on services such as Instagram, TikTok, X, Reddit, GitHub, Twitch, YouTube, Steam, Threads, Facebook, and LinkedIn. These links are flagged for review rather than automatically removed.
+- Warns when a message combines multiple personal-data signals or pairs a profile link with another identifying clue.
+- Runs before message send and edit. Existing redaction can replace configured sensitive terms; optional **Block high-risk messages** holds a draft when a high-risk combination is found.
+- Adds a privacy checklist in the plugin's settings About section.
+
+Exposure Guard does **not** perform web searches, reverse-image searches, data-broker lookups, or OSINT scans. It cannot stop another person from searching for information that is already public, prevent username correlation on external websites, or hide Discord metadata that Discord itself still makes visible. It only helps detect clues you are about to share in Discord. A social-profile link by itself is warned about but is not redacted. The detector is heuristic and may miss links or produce false positives.
+
+### Manual privacy steps
+
+These controls belong to Discord, Google, and data-broker websites; PrivacyToolkit does not modify those services' private settings or submit removal requests:
+
+1. **Discord Profile Privacy:** In User Settings → Data & Privacy → Profile Privacy, consider **Friends Only**. Discord says the avatar, banner, display name, username, server tag, account age, and mutual friends/servers remain visible.
+2. **Friend requests:** In User Settings → Content & Social → Friend Requests, disable the request categories you do not want. Disabling all three categories prevents requests from Everyone, Friends of Friends, and Server Members.
+3. **Server DMs:** In Content & Social → Social Permissions, disable DMs from server members and apply the change to existing servers when offered. Review individual server privacy settings as well.
+4. **Activity Sharing:** Review Activity Privacy separately; Profile Privacy does not automatically control every activity-sharing choice.
+5. **Google Search:** Use [Results about you](https://myactivity.google.com/results-about-you) to monitor and request removal of eligible results containing personal contact details or government ID information. This removes eligible Search results, not the original webpage.
+6. **People-search sites:** Follow the [FTC opt-out guide](https://consumer.ftc.gov/articles/what-know-about-people-search-sites-sell-your-information) and submit opt-outs directly to data-broker sites. Public records may remain available, and information can reappear.
+7. Avoid reusing the same usernames, avatars, bios, or contact details across unrelated accounts. Add any aliases you still use to the local Custom protected terms list so the plugin can warn when they appear in Discord messages.
+
+Review Vencord's own settings-sync controls before storing highly sensitive watchlist values. PrivacyToolkit does not send the watchlist to an OSINT lookup service.
+
 ## Configure update notifications
 
 Set **GitHub release repository** to `whipout3938-rgb/CurrentlyLOCALPrivacyToolkit`. The checker looks for stable releases on startup and every 24 hours. Once a stable release exists, it can notify you of newer versions. You must still manually replace the plugin source, rebuild Vencord, inject the build, and restart Discord.
