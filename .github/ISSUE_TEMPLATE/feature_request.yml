@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest a privacy feature or improvement to the plugin makers.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: "Keep suggestions defensive and local-first. Do not include anyone else's private information."
+  - type: textarea
+    id: problem
+    attributes:
+      label: What privacy problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like PrivacyToolkit to do?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or extra context
+    validations:
+      required: false
