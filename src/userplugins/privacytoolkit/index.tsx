@@ -1281,6 +1281,15 @@ export default definePlugin({
         <PrivacyToolkitAccessory message={props.message as Message} />
     ),
 
+    flux: {
+        CHANNEL_CREATE({ channel }: { channel: GroupDmChannel }) {
+            if (channel) void handleGroupDmCreate(channel);
+        },
+        CHANNEL_RECIPIENT_ADD(event: RecipientAddEvent) {
+            void handleCurrentUserAddedToGroupDm(event);
+        }
+    },
+
     start() {
         if (settings.store.protectIncoming) startDomProtection();
         void initializeGroupDmProtection();
@@ -1293,3 +1302,6 @@ export default definePlugin({
         stopDomProtection();
         if (updateTimer) clearInterval(updateTimer);
         updateTimer = undefined;
+        unmountCallRecorderPanel();
+    }
+});
