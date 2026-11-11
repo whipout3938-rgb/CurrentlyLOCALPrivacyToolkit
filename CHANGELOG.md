@@ -1,5 +1,14 @@
 # PrivacyToolkit changelog
 
+## 2.3.0
+- Added Exposure Guard with local warnings for common social-profile URLs and combinations of identifying clues.
+- Expanded the local identity watchlist guidance for reused usernames, handles, aliases, locations, schools, employers, and other identifiers.
+- Connected outgoing message and edit scanning to Vencord's Message Events API; configured sensitive content can be redacted before send, and high-risk drafts can optionally be held.
+- Connected message accessories so messages can display local detection warnings.
+- Added an in-plugin privacy guide for Discord profile/DM/friend-request settings, Google Results about you, and FTC data-broker opt-outs.
+- Clarified that the plugin does not perform external OSINT searches, reverse-image searches, or third-party data removal.
+
+
 ## 2.2.1
 - Renamed the plugin from AntiDoxx to PrivacyToolkit to describe its best-effort privacy utilities without implying guaranteed prevention.
 - Updated plugin, recorder, warning, CSS, storage-key, documentation, and package branding.
