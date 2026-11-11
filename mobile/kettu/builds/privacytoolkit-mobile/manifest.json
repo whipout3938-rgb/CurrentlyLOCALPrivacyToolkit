@@ -1,0 +1,11 @@
+{
+  "name": "PrivacyToolkit Mobile",
+  "description": "Mobile beta: local outgoing-message privacy scanning and optional redaction for Kettu.",
+  "authors": [
+    {
+      "name": "PrivacyToolkit contributors"
+    }
+  ],
+  "main": "index.js",
+  "hash": "64ad98795a55f9fd8be4b497a3fb90efd8222ea060528daaca0000a4e7500ba1"
+}
