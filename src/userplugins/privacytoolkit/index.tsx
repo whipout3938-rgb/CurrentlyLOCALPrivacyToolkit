@@ -404,8 +404,10 @@ function scanText(input: string): { text: string; labels: string[]; changed: boo
     const personalDataSignals = new Set<string>();
 
     for (const finding of getFindings()) {
+        // Detect against the original message so an earlier redaction cannot hide
+        // a second overlapping clue (for example, a protected handle in a profile URL).
         finding.pattern.lastIndex = 0;
-        if (finding.pattern.test(output)) {
+        if (finding.pattern.test(input)) {
             labels.add(finding.label);
             if (finding.label !== "known IP-logging link") personalDataSignals.add(finding.label);
             finding.pattern.lastIndex = 0;
