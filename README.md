@@ -11,6 +11,7 @@ A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides b
 - Alerts when a message combines multiple personal-data signals.
 - **ImageGuard**: automatic pre-upload checks plus a manual chat-bar scan for pending images. It checks EXIF/GPS metadata, visible text with on-device OCR where supported, and QR payloads where BarcodeDetector is available.
 - **OPSEC Center**: six defensive modules for identity compartmentalization, metadata, links, digital footprint, account security, and exposure response.
+- **App Authorization Guard**: pauses recognizable Discord OAuth2 authorization links inside the client and shows requested email/identity scopes, sensitive account/server scopes, bot installation, and privileged bot permissions before the user chooses to continue.
 - Local link warnings for common tracking parameters, suspicious IP-logging domains, and public social-profile URLs.
 - Group-DM auto-leave with a trusted-channel allowlist. This reacts after Discord adds the account and cannot prevent the initial server-side addition.
 - Optional GitHub Releases update notifications. The checker notifies only; updating still requires replacing source, rebuilding Vencord, injecting, and restarting.
@@ -18,6 +19,7 @@ A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides b
 
 ## Important limitations
 
+- App Authorization Guard only covers recognizable Discord OAuth2 authorization links and buttons handled inside the Vencord client. It cannot reliably intercept external-browser flows, other devices, direct app authorization paths, or nonstandard OAuth implementations. It reports requested scopes and permissions; it cannot inspect the app developer's private data-handling practices or prevent data use after authorization.
 - ImageGuard depends on Vencord's current `uploadFiles` path for automatic scanning. If Discord changes that internal method, the upload patch may stop applying; the manual scan button is available as a fallback.
 - OCR and QR scanning depend on experimental/browser APIs exposed by the user's Discord/Electron build. Unsupported checks are reported as unavailable. OCR cannot identify every visual clue, face, landmark, reflection, or background detail.
 - ImageGuard inspects the original local file before upload. It warns by default and does not strip metadata, blur pixels, or rewrite images. Optional blocking removes flagged images from the pending draft.
@@ -33,12 +35,12 @@ A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides b
 - PrivacyToolkit can reduce accidental disclosure through local warnings and best-effort redaction, but it cannot guarantee that personal information will not be shared. 
 ## Download
 
-The published **v2.2.1** pre-release contains the earlier PrivacyToolkit build. The **v2.4.0** ImageGuard and OPSEC Center tester pre-release is gated on a successful Vencord type-check and build; it still requires real-client testing by users.
+The published **v2.2.1** pre-release contains the earlier PrivacyToolkit build. The **v2.5.0** App Authorization Guard, ImageGuard, and OPSEC Center tester pre-release is gated on a successful Vencord type-check and build; it still requires real-client testing by users.
 
 - [Published releases](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases)
 - [Download the current main-branch source archive for testing](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/archive/refs/heads/main.zip)
 
-The 2.3.0 Exposure Guard and 2.4.0 ImageGuard/OPSEC Center changes are committed to `main`. Check the release page for the tester build once the compatibility workflow succeeds. To preview them, extract the main-branch source archive and copy `src/userplugins/privacytoolkit/` into your Vencord checkout. Build and test it locally before using it as a daily release.
+The 2.3.0 Exposure Guard, 2.4.0 ImageGuard/OPSEC Center, and 2.5.0 App Authorization Guard changes are committed to `main`. Check the release page for the tester build once the compatibility workflow succeeds. To preview them, extract the main-branch source archive and copy `src/userplugins/privacytoolkit/` into your Vencord checkout. Build and test it locally before using it as a daily release.
 
 ## Install
 
@@ -50,6 +52,14 @@ The 2.3.0 Exposure Guard and 2.4.0 ImageGuard/OPSEC Center changes are committed
 6. Review the settings after the rename. Custom terms, protected IPs, trusted group IDs, and the update repository may need to be entered again.
 
 See the [Vencord custom plugin guide](https://docs.vencord.dev/installing/custom-plugins/).
+
+## App Authorization Guard
+
+App Authorization Guard defaults to enabled. When a standard Discord OAuth2 authorization link is clicked inside the Discord client, it inspects the URL's requested scopes and bot permission bitfield. For sensitive requests it pauses the original click and displays a confirmation showing the requested data and capabilities. Cancel stops the authorization link from opening; Continue anyway replays the original click.
+
+It warns about the `email` scope, account identity, connected accounts, server membership, message-related scopes, bot installation, server channel visibility, and privileged bot permissions such as Administrator, Manage Server, Manage Roles, Manage Channels, Manage Webhooks, and View Audit Log. Each category can be disabled in plugin settings.
+
+**Limitations:** The guard covers recognizable Discord OAuth2 authorization links and authorize buttons handled inside the client. It cannot reliably intercept authorizations completed in an external browser, on another device, through direct/nonstandard flows, or after Discord changes its UI. Requested scopes and permissions do not reveal what an app will store or log. Data a bot legitimately receives may be retained or copied by its operator; the plugin cannot verify the developer's practices or prevent data use after authorization.
 
 ## ImageGuard
 
