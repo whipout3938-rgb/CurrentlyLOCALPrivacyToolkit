@@ -571,9 +571,9 @@ function inspectOutgoingMessage(messageObj: { content: string; }): { cancel: boo
     if (settings.store.protectOutgoing && result.changed) {
         messageObj.content = result.text;
         const labels = result.labels.filter(label => label !== "possible doxxing pattern");
-        showNotice(\`PrivacyToolkit redacted detected information before sending: \${labels.join(" · ") || "sensitive details"}.\`);
+        showNotice(`PrivacyToolkit redacted detected information before sending: ${labels.join(" · ") || "sensitive details"}.`);
     } else if (settings.store.exposureGuardEnabled && result.labels.length) {
-        showNotice(\`Exposure Guard warning: \${result.labels.join(" · ")}. This message is still being sent; review it before sharing.\`);
+        showNotice(`Exposure Guard warning: ${result.labels.join(" · ")}. This message is still being sent; review it before sharing.`);
     }
 }
 
@@ -1107,8 +1107,8 @@ export default definePlugin({
         return inspectOutgoingMessage(messageObj);
     },
 
-    renderMessageAccessory: ({ message }: { message: Message }) => (
-        <PrivacyToolkitAccessory message={message} />
+    renderMessageAccessory: props => (
+        <PrivacyToolkitAccessory message={props.message as Message} />
     ),
 
     start() {
