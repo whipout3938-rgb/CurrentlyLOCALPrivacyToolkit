@@ -13,7 +13,7 @@ import { showNotice } from "@api/Notices";
 import { definePluginSettings } from "@api/Settings";
 import definePlugin from "@utils/types";
 import { OptionType } from "@utils/types";
-import type { Message } from "@vencord/discord-types";
+import type { CloudUpload, Message } from "@vencord/discord-types";
 import { ChannelStore, RestAPI, UserStore } from "@webpack/common";
 
 const PLUGIN_VERSION = "2.4.0";
@@ -1246,6 +1246,25 @@ export default definePlugin({
     tags: ["Privacy", "Security"],
     settings,
     settingsAboutComponent: ExposureGuardAbout,
+    dependencies: ["MessageEventsAPI"],
+    chatBarButton: {
+        icon: ImageGuardIcon,
+        render: makeImageGuardChatBarButton(settings, scanText, showNotice)
+    },
+    patches: [
+        {
+            // Vencord's uploadFiles path receives CloudUpload instances whose
+            // item.file is the local File. Inspect it before upload begins.
+            find: "async uploadFiles(",
+            replacement: {
+                match: /async uploadFiles\((\i)\){/,
+                replace: "async uploadFiles($1){await $self.scanUploads($1);"
+            }
+        }
+    ],
+    scanUploads(uploads: CloudUpload[]) {
+        return scanPendingImageUploads(uploads, settings, scanText, showNotice);
+    },
 
     onBeforeMessageSend(_channelId, messageObj) {
         return inspectOutgoingMessage(messageObj);
