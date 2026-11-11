@@ -1,20 +1,18 @@
-name: Package PrivacyToolkit release
+name: Test and package PrivacyToolkit release
 
 on:
   push:
-    branches:
-      - main
     tags:
       - "v*"
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag, for example v2.2.2"
+        description: "Release tag, for example v2.4.0"
         required: true
-        default: "v2.2.1"
+        default: "v2.4.0"
         type: string
       prerelease:
-        description: "Mark this release as a pre-release"
+        description: "Mark this tester build as a pre-release"
         required: true
         default: true
         type: boolean
@@ -24,14 +22,46 @@ permissions:
 
 jobs:
   release:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.ref_type == 'tag' ||
-      github.event.head_commit.message == 'Prepare PrivacyToolkit v2.2.1 release'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out source
+      - name: Check out PrivacyToolkit
         uses: actions/checkout@v4
+
+      - name: Check out current Vencord
+        uses: actions/checkout@v4
+        with:
+          repository: Vendicated/Vencord
+          ref: main
+          path: vencord
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.15.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: vencord/pnpm-lock.yaml
+
+      - name: Install Vencord dependencies
+        working-directory: vencord
+        run: pnpm install --frozen-lockfile
+
+      - name: Install PrivacyToolkit into the test checkout
+        run: |
+          mkdir -p vencord/src/userplugins/privacytoolkit
+          cp src/userplugins/privacytoolkit/* vencord/src/userplugins/privacytoolkit/
+
+      - name: Type-check Vencord with PrivacyToolkit
+        working-directory: vencord
+        run: pnpm test:ts
+
+      - name: Build Vencord with PrivacyToolkit
+        working-directory: vencord
+        run: pnpm build
 
       - name: Choose release tag
         id: release_meta
@@ -44,12 +74,9 @@ jobs:
           if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
             TAG_NAME="$INPUT_TAG"
             PRERELEASE="$INPUT_PRERELEASE"
-          elif [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-            TAG_NAME="$GITHUB_REF_NAME"
-            PRERELEASE="false"
           else
-            TAG_NAME="v2.2.1"
-            PRERELEASE="true"
+            TAG_NAME="$GITHUB_REF_NAME"
+            if [[ "$TAG_NAME" == "v2.4.0" ]]; then PRERELEASE="true"; else PRERELEASE="false"; fi
           fi
           if [[ ! "$TAG_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
             echo "Invalid release tag: $TAG_NAME"
@@ -64,6 +91,7 @@ jobs:
           set -euo pipefail
           mkdir -p dist/package/privacytoolkit
           cp src/userplugins/privacytoolkit/index.tsx dist/package/privacytoolkit/
+          cp src/userplugins/privacytoolkit/imageGuard.tsx dist/package/privacytoolkit/
           cp src/userplugins/privacytoolkit/styles.css dist/package/privacytoolkit/
           cp README.md CHANGELOG.md LICENSE dist/package/
           cd dist/package
@@ -78,9 +106,7 @@ jobs:
         run: |
           set -euo pipefail
           release_flags=()
-          if [[ "$PRERELEASE" == "true" ]]; then
-            release_flags+=(--prerelease)
-          fi
+          if [[ "$PRERELEASE" == "true" ]]; then release_flags+=(--prerelease); fi
           gh release create "$TAG_NAME" "$GITHUB_WORKSPACE/dist/privacytoolkit.zip" \
             --target "$GITHUB_SHA" \
             --title "PrivacyToolkit $TAG_NAME" \
