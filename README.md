@@ -27,7 +27,12 @@ A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides b
 - The plugin can prevent you from sending personal info to others. 
 ## Download
 
-Download **`privacytoolkit.zip`** from the [latest GitHub release](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases/latest). The archive contains the `privacytoolkit/` plugin folder plus the README, changelog, and license.
+The published **v2.2.1** pre-release contains the earlier PrivacyToolkit build and does not include Exposure Guard 2.3.0.
+
+- [Published releases](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases)
+- [Download the current main-branch source archive for testing](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/archive/refs/heads/main.zip)
+
+The 2.3.0 Exposure Guard changes are committed to `main` but are not packaged as a release yet. To preview them, extract the main-branch source archive and copy `src/userplugins/privacytoolkit/` into your Vencord checkout. Build and test it locally before using it as a daily release.
 
 ## Install
 
