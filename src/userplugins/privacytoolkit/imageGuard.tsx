@@ -76,6 +76,9 @@ async function scanImageFile(file: File, config: ImageGuardConfig, scanText: Sca
         return result;
     }
 
+    const filenameMatches = scanText(file.name || "").labels;
+    if (filenameMatches.length) result.findings.push(...filenameMatches.map(label => "filename: " + label));
+
     try {
         const bytes = new Uint8Array(await file.arrayBuffer());
         if (config.store.detectImageMetadata && config.store.opsecMetadata) {
@@ -152,8 +155,12 @@ async function inspectUploads(uploads: CloudUpload[], config: ImageGuardConfig, 
         const details = flagged.map(item => item.result.filename + ": " + item.result.findings.join(", ")).join(" | ");
         showNotice("ImageGuard found possible exposure: " + details);
         if (config.store.imageGuardBlockOnFindings) {
-            for (const item of flagged) item.upload.removeFromMsgDraft();
-            showNotice("ImageGuard removed flagged image(s) from the pending draft. Review them before re-adding.");
+            const blockedUploads = new Set(flagged.map(item => item.upload));
+            for (const upload of blockedUploads) upload.removeFromMsgDraft();
+            for (let index = uploads.length - 1; index >= 0; index--) {
+                if (blockedUploads.has(uploads[index])) uploads.splice(index, 1);
+            }
+            showNotice("ImageGuard removed flagged image(s) from the pending draft and skipped their upload. Review them before re-adding.");
         }
     } else if (incomplete) {
         showNotice("ImageGuard checked pending images, but some OCR/QR or decoding checks were unavailable. Review them manually.");
