@@ -96,6 +96,11 @@ const settings = definePluginSettings({
         description: "Warn when a message contains a link to a recognizable public social profile. Links are flagged for review, not automatically removed.",
         default: true
     },
+    protectOwnDiscordId: {
+        type: OptionType.BOOLEAN,
+        description: "Automatically detect your current Discord account ID in messages so you can avoid sharing it accidentally.",
+        default: true
+    },
     blockHighRiskMessages: {
         type: OptionType.BOOLEAN,
         description: "Hold a message or edit when Exposure Guard finds a high-risk combination. Disabled by default to avoid blocking legitimate messages.",
@@ -372,6 +377,16 @@ function getFindings(): Finding[] {
         }
     }
 
+    if (s.exposureGuardEnabled && s.protectOwnDiscordId) {
+        const ownId = UserStore.getCurrentUser()?.id;
+        if (ownId && /^\d{17,20}$/.test(ownId)) {
+            findings.push({
+                label: "your Discord account ID",
+                pattern: new RegExp("(?<!\\d)" + ownId + "(?!\\d)", "g")
+            });
+        }
+    }
+
     if (s.exposureGuardEnabled && s.detectSocialProfileLinks) {
         findings.push({
             label: "public social profile link",
@@ -602,6 +617,7 @@ function ExposureGuardAbout() {
                 Exposure Guard works locally in your Discord client. Add usernames, aliases, profile handles,
                 locations, schools, or employers you want protected to <strong>Custom protected terms</strong>.
                 It can warn about recognizable public profile links and combinations of clues before you share them.
+                It can also watch your current numeric Discord user ID to catch accidental pasting.
             </p>
             <p>
                 It does not search the web, query OSINT services, remove public records, hide your Discord account
