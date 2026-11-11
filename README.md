@@ -29,8 +29,8 @@ A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides b
 - The call recorder requires the user to notify participants and obtain their agreement before recording. The confirmation is not proof of consent and does not determine what recording laws apply.
 - Audio is saved locally; no recording upload service is used by this feature. Default save destination follows the browser/Electron download setting (usually Downloads). A custom folder is available where Chromium's directory picker is supported.
 - The updater only checks the latest stable GitHub Release. It does not silently replace plugin code or rebuild Vencord.
-- Treat the plugin as experimental until you have built and tested it against your own Vencord/Discord version.
-- The plugin can prevent you from sending personal info to others. 
+- Treat the plugin as experimental until the compatibility workflow and your own Vencord/Discord client tests have completed. A successful build does not prove every runtime hook or browser API is available.
+- PrivacyToolkit can reduce accidental disclosure through local warnings and best-effort redaction, but it cannot guarantee that personal information will not be shared. 
 ## Download
 
 The published **v2.2.1** pre-release contains the earlier PrivacyToolkit build. The new **v2.4.0** ImageGuard and OPSEC Center source is being prepared for a tester pre-release and should be treated as experimental until the Vencord compatibility workflow and real-client testing have completed.
