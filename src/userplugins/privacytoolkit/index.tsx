@@ -8,6 +8,7 @@
 import "./styles.css";
 
 import * as DataStore from "@api/DataStore";
+import { ImageGuardIcon, makeImageGuardChatBarButton, scanPendingImageUploads } from "./imageGuard";
 import { showNotice } from "@api/Notices";
 import { definePluginSettings } from "@api/Settings";
 import definePlugin from "@utils/types";
@@ -15,7 +16,7 @@ import { OptionType } from "@utils/types";
 import type { Message } from "@vencord/discord-types";
 import { ChannelStore, RestAPI, UserStore } from "@webpack/common";
 
-const PLUGIN_VERSION = "2.3.0";
+const PLUGIN_VERSION = "2.4.0";
 const UPDATE_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const REDACTED = "[REDACTED]";
 const WARNING_CLASS = "privacy-toolkit-warning";
@@ -105,6 +106,66 @@ const settings = definePluginSettings({
         type: OptionType.BOOLEAN,
         description: "Hold a message or edit when Exposure Guard finds a high-risk combination. Disabled by default to avoid blocking legitimate messages.",
         default: false
+    },
+    imageGuardEnabled: {
+        type: OptionType.BOOLEAN,
+        description: "Enable local ImageGuard image inspection.",
+        default: true
+    },
+    imageGuardAutoScan: {
+        type: OptionType.BOOLEAN,
+        description: "Automatically inspect pending image files before upload.",
+        default: true
+    },
+    imageGuardManualScan: {
+        type: OptionType.BOOLEAN,
+        description: "Show a manual scan button beside the composer when image attachments are pending.",
+        default: true
+    },
+    imageGuardBlockOnFindings: {
+        type: OptionType.BOOLEAN,
+        description: "Remove flagged images from the pending draft. Disabled by default; otherwise findings are warnings only.",
+        default: false
+    },
+    detectImageMetadata: {
+        type: OptionType.BOOLEAN,
+        description: "Inspect local image files for EXIF and GPS metadata before upload.",
+        default: true
+    },
+    detectTrackingLinks: {
+        type: OptionType.BOOLEAN,
+        description: "Warn about common tracking parameters in links you are about to send.",
+        default: true
+    },
+    opsecCompartmentalization: {
+        type: OptionType.BOOLEAN,
+        description: "Show identity compartmentalization guidance in OPSEC Center.",
+        default: true
+    },
+    opsecMetadata: {
+        type: OptionType.BOOLEAN,
+        description: "Show metadata protection guidance in OPSEC Center.",
+        default: true
+    },
+    opsecLinks: {
+        type: OptionType.BOOLEAN,
+        description: "Show link privacy guidance in OPSEC Center.",
+        default: true
+    },
+    opsecFootprint: {
+        type: OptionType.BOOLEAN,
+        description: "Show digital-footprint guidance in OPSEC Center.",
+        default: true
+    },
+    opsecAccount: {
+        type: OptionType.BOOLEAN,
+        description: "Show account-security audit guidance in OPSEC Center.",
+        default: true
+    },
+    opsecResponse: {
+        type: OptionType.BOOLEAN,
+        description: "Show exposure-response guidance in OPSEC Center.",
+        default: true
     },
     protectedTerms: {
         type: OptionType.STRING,
@@ -353,6 +414,14 @@ function getFindings(): Finding[] {
     for (const ip of protectedIpTerms()) {
         const escaped = ip.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         findings.push({ label: "your protected IP address", pattern: new RegExp(escaped, "gi") });
+    }
+
+    if (s.detectTrackingLinks && s.opsecLinks) {
+        findings.push({
+            label: "link tracking parameters",
+            pattern: /https?:\/\/[^\s<>]+[?&](?:utm_[a-z0-9_]+|fbclid|gclid|dclid|msclkid|mc_cid|mc_eid|igshid|si|ref_src|vero_id)=[^\s&#<>]+/gi,
+            redact: false
+        });
     }
 
     if (s.detectSsn)
