@@ -714,6 +714,22 @@ function PrivacyToolkitAccessory({ message }: { message: Message }) {
 function ExposureGuardAbout() {
     return (
         <div className="privacy-toolkit-about">
+            <h3>App Authorization Guard</h3>
+            <p>
+                Before a standard Discord OAuth2 authorization link is opened from inside Discord, PrivacyToolkit
+                checks the requested OAuth scopes and bot permission bits. When it sees email access, account identity,
+                connected accounts, server or message access, bot installation, or powerful server permissions, it
+                pauses the click and shows a confirmation with the requested access. <strong>Cancel authorization</strong>
+                is the safe default; <strong>Continue anyway</strong> replays the original action.
+            </p>
+            <p>
+                Data made available to an app or bot may be logged, retained, copied into private databases or channels
+                controlled by its operator, or misused. Are you sure you trust this developer with the requested access?
+                PrivacyToolkit cannot inspect an app's private storage, verify its privacy policy, or prevent data handling
+                after Discord grants access. This guard covers recognizable Discord OAuth2 authorization links handled
+                inside the client; it cannot reliably intercept authorizations completed in an external browser, on
+                another device, or through a nonstandard flow.
+            </p>
             <h3>OPSEC Center — reduce accidental exposure</h3>
             <p>
                 OPSEC Center combines local detection with six defensive privacy modules. All ImageGuard analysis is local:
