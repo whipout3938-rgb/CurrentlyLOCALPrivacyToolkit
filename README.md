@@ -25,11 +25,15 @@ A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides b
 - The updater only checks the latest stable GitHub Release. It does not silently replace plugin code or rebuild Vencord.
 - Treat the plugin as experimental until you have built and tested it against your own Vencord/Discord version.
 
+## Download
+
+Download **`privacytoolkit.zip`** from the [latest GitHub release](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases/latest). The archive contains the `privacytoolkit/` plugin folder plus the README, changelog, and license.
+
 ## Install
 
 1. Fully quit Discord.
-2. In your Vencord checkout, move any older `src/userplugins/antidoxx/` folder outside `src/userplugins/` as a backup. Do not keep both old and new plugin folders active.
-3. Copy `src/userplugins/privacytoolkit/` from this repository into `Vencord/src/userplugins/privacytoolkit/`.
+2. Move any folder containing an older copy of this plugin out of `Vencord/src/userplugins/` as a backup. Do not keep two copies active.
+3. Extract `privacytoolkit.zip` and copy its `privacytoolkit/` folder into `Vencord/src/userplugins/privacytoolkit/`.
 4. From the Vencord repository root, run `pnpm build`.
 5. Run `pnpm inject`, restart Discord, and enable **PrivacyToolkit** under **User Settings → Vencord → Plugins**.
 6. Review the settings after the rename. Custom terms, protected IPs, trusted group IDs, and the update repository may need to be entered again.
@@ -38,16 +42,11 @@ See the [Vencord custom plugin guide](https://docs.vencord.dev/installing/custom
 
 ## Configure update notifications
 
-Set **GitHub release repository** to `whipout3938-rgb/CurrentlyLOCALPrivacyToolkit`. The checker looks for stable releases on startup and every 24 hours. Once a release exists, it can notify you of newer versions. You must still manually replace the plugin source, rebuild Vencord, inject the build, and restart Discord.
+Set **GitHub release repository** to `whipout3938-rgb/CurrentlyLOCALPrivacyToolkit`. The checker looks for stable releases on startup and every 24 hours. Once a stable release exists, it can notify you of newer versions. You must still manually replace the plugin source, rebuild Vencord, inject the build, and restart Discord.
 
-## Publish a release
+## Publishing
 
-The GitHub Actions workflow in `.github/workflows/release.yml` packages the installable source and creates a GitHub Release when a tag matching `v*` is pushed. Do not publish a stable release until the source has been built and tested locally. For example:
-
-```bash
-git tag v2.2.1
-git push origin v2.2.1
-```
+GitHub Actions packages the installable source as **`privacytoolkit.zip`** and creates a GitHub Release. Pushing a `v*` tag runs the workflow; maintainers can also run it manually from the Actions tab.
 
 ## License
 
