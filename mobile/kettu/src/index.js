@@ -272,6 +272,27 @@
                 })
             ),
             h(
+                ReactNative.View,
+                { style: { paddingHorizontal: 16, paddingVertical: 12 } },
+                h(ReactNative.Text, {
+                    style: { fontWeight: "600", marginBottom: 8 }
+                }, "Custom protected terms"),
+                h(ReactNative.TextInput, {
+                    value: typeof storage.protectedTerms === "string" ? storage.protectedTerms : "",
+                    onChangeText: value => { storage.protectedTerms = value; },
+                    multiline: true,
+                    textAlignVertical: "top",
+                    placeholder: "One term per line, or separate terms with commas",
+                    style: {
+                        minHeight: 96,
+                        borderWidth: 1,
+                        borderColor: "#888888",
+                        borderRadius: 8,
+                        padding: 10
+                    }
+                })
+            ),
+            h(
                 Forms.FormSection,
                 { title: "Mobile Beta Limitations" },
                 h(Forms.FormRow, {
