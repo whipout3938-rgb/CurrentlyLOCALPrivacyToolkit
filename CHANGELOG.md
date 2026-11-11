@@ -1,5 +1,13 @@
 # PrivacyToolkit changelog
 
+## 2.5.0
+- Added App Authorization Guard for recognizable Discord OAuth2 authorization links inside the client.
+- Added a confirmation dialog that lists requested email and identity scopes, sensitive account/server scopes, bot installation, channel message visibility, and privileged bot permission bits.
+- Added independent settings for email, sensitive OAuth scopes, privileged bot permissions, and bot message visibility warnings.
+- Added an explicit explanation that app operators may log or retain data and that PrivacyToolkit cannot verify post-authorization data handling.
+- Documented external-browser, other-device, nonstandard OAuth-flow, and post-authorization limitations.
+
+
 ## 2.4.0
 - Added ImageGuard with automatic pre-upload scanning through Vencord's uploadFiles path and a manual pending-attachment scan button.
 - Added local image metadata checks for EXIF and GPS tags.
