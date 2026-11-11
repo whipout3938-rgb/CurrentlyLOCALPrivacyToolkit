@@ -1,6 +1,6 @@
 # PrivacyToolkit — Vencord userplugin
 
-A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides best-effort detection, alerts, local message redaction, group-DM controls, and optional local call recording. It is **not** a guarantee that personal information cannot be exposed.
+A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides best-effort detection, alerts, local message redaction, group-DM controls, and optional local call recording. It is **not** a guarantee that personal information cannot be exposed. Feedback is recommended, it helps with development.
 
 ## Features
 
