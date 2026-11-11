@@ -16,8 +16,9 @@ import type { CloudUpload, Message } from "@vencord/discord-types";
 import { ChannelStore, RestAPI, UserStore } from "@webpack/common";
 
 import { ImageGuardIcon, makeImageGuardChatBarButton, scanPendingImageUploads } from "./imageGuard";
+import { startAuthorizationGuard, stopAuthorizationGuard } from "./authorizationGuard";
 
-const PLUGIN_VERSION = "2.4.0";
+const PLUGIN_VERSION = "2.5.0";
 const UPDATE_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const REDACTED = "[REDACTED]";
 const WARNING_CLASS = "privacy-toolkit-warning";
@@ -111,6 +112,31 @@ const settings = definePluginSettings({
         type: OptionType.BOOLEAN,
         description: "Hold a message or edit when Exposure Guard finds a high-risk combination. Disabled by default to avoid blocking legitimate messages.",
         default: false
+    },
+    appAuthorizationGuardEnabled: {
+        type: OptionType.BOOLEAN,
+        description: "Show a confirmation warning before standard Discord OAuth2 bot and application authorization links are opened.",
+        default: true
+    },
+    warnOnEmailScope: {
+        type: OptionType.BOOLEAN,
+        description: "Warn when an authorization request asks for your Discord email address.",
+        default: true
+    },
+    warnOnSensitiveScopes: {
+        type: OptionType.BOOLEAN,
+        description: "Warn about connected accounts, server membership, role-connection, message, and webhook OAuth scopes.",
+        default: true
+    },
+    warnOnPrivilegedBotPermissions: {
+        type: OptionType.BOOLEAN,
+        description: "Warn when a bot requests powerful server permissions such as Administrator, Manage Server, Manage Roles, or Manage Webhooks.",
+        default: true
+    },
+    warnOnBotMessageAccess: {
+        type: OptionType.BOOLEAN,
+        description: "Warn when a bot requests both View Channel and Read Message History.",
+        default: true
     },
     imageGuardEnabled: {
         type: OptionType.BOOLEAN,
@@ -1248,7 +1274,7 @@ function unmountCallRecorderPanel() {
 
 export default definePlugin({
     name: "PrivacyToolkit",
-    description: "Local privacy tools for Discord, including ImageGuard, OPSEC Center, Exposure Guard, message warnings and redaction, group-DM controls, and consent-gated call recording. Not a guarantee against disclosure.",
+    description: "Local privacy tools for Discord, including App Authorization Guard, ImageGuard, OPSEC Center, Exposure Guard, message warnings and redaction, group-DM controls, and consent-gated call recording. Not a guarantee against disclosure.",
     authors: [{ name: "PrivacyToolkit contributors", id: 0n }],
     tags: ["Privacy", "Utility"],
     settings,
@@ -1300,6 +1326,7 @@ export default definePlugin({
         void checkForUpdates();
         updateTimer = setInterval(() => void checkForUpdates(), UPDATE_CHECK_INTERVAL_MS);
         mountCallRecorderPanel();
+        startAuthorizationGuard(settings);
     },
 
     stop() {
@@ -1307,5 +1334,6 @@ export default definePlugin({
         if (updateTimer) clearInterval(updateTimer);
         updateTimer = undefined;
         unmountCallRecorderPanel();
+        stopAuthorizationGuard();
     }
 });
