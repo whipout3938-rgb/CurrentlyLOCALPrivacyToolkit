@@ -1,5 +1,16 @@
 # PrivacyToolkit changelog
 
+## 2.4.0
+- Added ImageGuard with automatic pre-upload scanning through Vencord's uploadFiles path and a manual pending-attachment scan button.
+- Added local image metadata checks for EXIF and GPS tags.
+- Added on-device OCR checks when TextDetector is exposed and QR payload checks when BarcodeDetector is available.
+- Added optional removal of flagged images from the pending message draft; warning-only behavior remains the default.
+- Added OPSEC Center with six configurable defensive modules: identity compartmentalization, metadata, links, digital footprint, account security, and exposure response.
+- Added local warnings for common URL tracking parameters.
+- Added direct GitHub feedback and bug-report guidance for testers.
+- Added an explicit MessageEventsAPI dependency and Vencord compatibility CI.
+
+
 ## 2.3.0
 - Added Exposure Guard with local warnings for common social-profile URLs and combinations of identifying clues.
 - Added optional automatic detection of the current Discord account ID in messages.
