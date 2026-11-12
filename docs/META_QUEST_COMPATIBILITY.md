@@ -1,6 +1,6 @@
 # Meta Quest compatibility spike
 
-**Status: research and test-plan stage. No Quest device has been tested by the PrivacyToolkit maintainers, and Quest support is not currently claimed.**
+**Status: experimental plugin package prepared for testing. No Quest 3 or Quest 3S device has been validated by the PrivacyToolkit maintainers. Neither device is currently claimed as supported.**
 
 ## What we are trying to support
 
@@ -33,9 +33,9 @@ References:
 - [Kettu Android installation options](https://github.com/C0C0B01/Kettu)
 - [KettuManager source](https://github.com/C0C0B01/KettuManager)
 
-## First target device: Meta Quest 3
+## First hardware targets: Meta Quest 3 and Quest 3S
 
-The first real-hardware validation target is **Meta Quest 3**. Quest 3 compatibility must be demonstrated on the actual headset; Android/AOSP similarity alone does not prove that KettuManager, LSPatch, the Android Discord build, or the plugin APIs will work on Horizon OS.
+The first maintainer test target is **Meta Quest 3**. **Meta Quest 3S is included as a second, separately tested target** so a friend can report results from that model. Passing on Quest 3 does not establish compatibility on Quest 3S, or vice versa. Android/AOSP similarity alone does not prove that KettuManager, LSPatch, the Android Discord build, or the plugin APIs will work on Horizon OS.
 
 For the first report, capture the Horizon OS version/build and record each stage separately: Android Discord launch, Kettu load, PrivacyToolkit settings load, send-hook attachment, warning behavior, and optional redaction. Do not include the headset serial number, Meta account identifiers, or Discord credentials in a report.
 
@@ -83,3 +83,18 @@ A Quest compatibility report should include:
 - Exact synthetic test case, expected result, actual result, and sanitized errors.
 
 Never attach headset serial numbers, account IDs, access tokens, private messages, voice recordings, or screenshots containing identifying information.
+
+
+## Experimental v0.1 package
+
+The **PrivacyToolkit Quest Experimental v0.1** pre-release is a Kettu external-plugin bundle only. It contains the plugin JavaScript, its manifest, and these instructions. It does **not** contain Discord, KettuManager, Kettu, an APK, an installer, or a Quest-native application. It does not modify the official Horizon Store Discord app.
+
+When published, the package will be available at:
+- [PrivacyToolkit Quest Experimental v0.1 release](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases/tag/v0.1.0-quest.1)
+- [Download the plugin ZIP](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases/download/v0.1.0-quest.1/privacytoolkit-quest-experimental-v0.1.zip)
+
+The ZIP is intended only for people who already have a separately installed standard Android Discord build with Kettu loaded. The possible KettuManager/LSPatch-on-Horizon-OS route remains unverified. Do not install a modified client from an unofficial mirror. Preserve the official Quest Store app and use a secondary/test Discord account.
+
+For initial behavior tests, use synthetic text only. For example, send `privacy-test@example.invalid` in a private test channel. With auto-redaction off, a warning should appear without changing the message. After separately enabling auto-redaction, the detected email should be replaced with `[REDACTED]`. The `.invalid` domain is reserved for testing; do not use real personal details.
+
+For the release checklist, test each stage independently on both models: standard Android Discord 2D launch, KettuManager install, Kettu load, plugin/settings load, outgoing hook, warning, opt-in redaction, and controller/hand UI usability.

@@ -1,0 +1,11 @@
+{
+  "name": "privacytoolkit-kettu",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Kettu/Vendetta-compatible mobile build of PrivacyToolkit",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "npm test && npm run build && node --check builds/privacytoolkit-mobile/index.js"
+  }
+}
