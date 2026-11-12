@@ -1,0 +1,93 @@
+name: Quest experimental package
+
+on:
+  pull_request:
+    paths:
+      - "mobile/kettu/**"
+      - "docs/META_QUEST_COMPATIBILITY.md"
+      - "quest-experimental/**"
+      - ".github/ISSUE_TEMPLATE/meta_quest_compatibility.yml"
+      - ".github/workflows/quest-experimental-release.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "mobile/kettu/**"
+      - "docs/META_QUEST_COMPATIBILITY.md"
+      - "quest-experimental/**"
+      - ".github/ISSUE_TEMPLATE/meta_quest_compatibility.yml"
+      - ".github/workflows/quest-experimental-release.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run Kettu mobile smoke tests
+        working-directory: mobile/kettu
+        run: npm test
+
+      - name: Rebuild plugin bundle
+        working-directory: mobile/kettu
+        run: npm run build
+
+      - name: Validate generated JavaScript
+        run: node --check mobile/kettu/builds/privacytoolkit-mobile/index.js
+
+      - name: Verify generated bundle is committed
+        run: git diff --exit-code -- mobile/kettu/builds
+
+      - name: Assemble Quest experimental ZIP
+        run: |
+          set -euo pipefail
+          PACKAGE="PrivacyToolkit-Quest-Experimental-v0.1"
+          mkdir -p "dist/${PACKAGE}/plugin"
+          cp mobile/kettu/builds/privacytoolkit-mobile/index.js "dist/${PACKAGE}/plugin/index.js"
+          cp mobile/kettu/builds/privacytoolkit-mobile/manifest.json "dist/${PACKAGE}/plugin/manifest.json"
+          cp quest-experimental/README.md "dist/${PACKAGE}/README.md"
+          (cd dist && zip -qr ../privacytoolkit-quest-experimental-v0.1.zip "${PACKAGE}")
+          sha256sum privacytoolkit-quest-experimental-v0.1.zip
+
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: privacytoolkit-quest-experimental-v0.1
+          path: privacytoolkit-quest-experimental-v0.1.zip
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-prerelease:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[publish-quest-experimental-v0.1]') }}
+    needs: validate-and-package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out release notes
+        uses: actions/checkout@v4
+
+      - name: Download validated ZIP
+        uses: actions/download-artifact@v4
+        with:
+          name: privacytoolkit-quest-experimental-v0.1
+          path: release-assets
+
+      - name: Publish GitHub pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release create v0.1.0-quest.1 release-assets/privacytoolkit-quest-experimental-v0.1.zip \
+            --title "PrivacyToolkit Quest Experimental v0.1" \
+            --notes-file quest-experimental/RELEASE_NOTES.md \
+            --prerelease
