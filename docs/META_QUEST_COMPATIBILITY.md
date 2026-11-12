@@ -33,6 +33,12 @@ References:
 - [Kettu Android installation options](https://github.com/C0C0B01/Kettu)
 - [KettuManager source](https://github.com/C0C0B01/KettuManager)
 
+## First target device: Meta Quest 3
+
+The first real-hardware validation target is **Meta Quest 3**. Quest 3 compatibility must be demonstrated on the actual headset; Android/AOSP similarity alone does not prove that KettuManager, LSPatch, the Android Discord build, or the plugin APIs will work on Horizon OS.
+
+For the first report, capture the Horizon OS version/build and record each stage separately: Android Discord launch, Kettu load, PrivacyToolkit settings load, send-hook attachment, warning behavior, and optional redaction. Do not include the headset serial number, Meta account identifiers, or Discord credentials in a report.
+
 ## Recommended first implementation
 
 Reuse the existing [Kettu mobile MVP](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/pull/2) rather than building a separate VR app. The first target is the normal Android Discord app running as a flat 2D app on Quest. We can consider spatial/immersive UI only if there is a real need after the plugin works.
