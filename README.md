@@ -35,12 +35,13 @@ A collection of privacy-focused utilities for Vencord. PrivacyToolkit provides b
 - PrivacyToolkit can reduce accidental disclosure through local warnings and best-effort redaction, but it cannot guarantee that personal information will not be shared. 
 ## Download
 
-The published **v2.2.1** pre-release contains the earlier PrivacyToolkit build. The **v2.5.0** App Authorization Guard, ImageGuard, and OPSEC Center tester pre-release has passed the automated Vencord type-check and build. The release workflow repeats those checks before publishing; the build still requires real-client testing by users.
+The [v2.5.0 pre-release](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases/tag/v2.5.0) is the current desktop beta build. It includes Exposure Guard, ImageGuard, OPSEC Center, and App Authorization Guard. It passed the automated Vencord type-check and build, but still needs real-client testing. This is a **pre-release**, not a stable release.
 
 - [Published releases](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases)
-- [Download the current main-branch source archive for testing](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/archive/refs/heads/main.zip)
+- [Download the v2.5.0 tester archive](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/releases/download/v2.5.0/privacytoolkit.zip)
+- [Download the current main-branch source archive](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/archive/refs/heads/main.zip)
 
-The 2.3.0 Exposure Guard, 2.4.0 ImageGuard/OPSEC Center, and 2.5.0 App Authorization Guard changes are committed to `main`. Check the release page for the tester build after the release workflow completes. To preview them, extract the main-branch source archive and copy `src/userplugins/privacytoolkit/` into your Vencord checkout. Build and test it locally before using it as a daily release.
+The 2.5.1 video-timestamp/IPv6 false-positive fix is still in [PR #1](https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/pull/1), so it is not included in v2.5.0. Until that fix is merged and released, disable Detect IPv6 for routine use or test that issue separately. To preview unreleased code, extract the main-branch source archive and copy `src/userplugins/privacytoolkit/` into your Vencord checkout. Build and test it locally before using it as a daily release.
 
 ## Install
 
