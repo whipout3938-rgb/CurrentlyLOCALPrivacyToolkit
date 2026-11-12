@@ -1,26 +1,58 @@
-name: Feature request
-description: Suggest a privacy feature or improvement to the plugin makers.
-title: "[Feature]: "
+name: Beta feature request
+description: Suggest an improvement or explain a missing workflow.
+title: "[Feature request]: "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
-      value: "Keep suggestions defensive and local-first. Do not include anyone else's private information."
+      value: |
+        Please describe the problem to solve. Do not include real personal information, private messages, credentials, screenshots, or recordings.
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Desktop (Windows)
+        - Desktop (macOS)
+        - Desktop (Linux)
+        - Android / Kettu
+        - iPhone / iOS
+        - Meta Quest
+        - All platforms
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: summary
+    attributes:
+      label: What would you like to see?
+      placeholder: A short description of the feature
+    validations:
+      required: true
   - type: textarea
     id: problem
     attributes:
-      label: What privacy problem should this solve?
+      label: What problem would this solve?
+      description: Explain the situation and why the current behavior is not enough.
     validations:
       required: true
   - type: textarea
-    id: proposal
+    id: solution
     attributes:
-      label: What would you like PrivacyToolkit to do?
+      label: How do you imagine it working?
+      description: Describe the workflow or behavior you have in mind.
     validations:
-      required: true
+      required: false
   - type: textarea
     id: alternatives
     attributes:
-      label: Alternatives or extra context
+      label: Alternatives considered (optional)
     validations:
       required: false
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: I have not included real personal data, credentials, private messages, or other people's recordings.
+          required: true
