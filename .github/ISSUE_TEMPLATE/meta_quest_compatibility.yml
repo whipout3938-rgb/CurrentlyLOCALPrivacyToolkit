@@ -1,0 +1,120 @@
+name: Meta Quest compatibility report
+description: Report whether the experimental Kettu/Android Discord route works on your Quest headset.
+title: "[Quest compatibility]: "
+labels: ["compatibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is an experimental, unverified route. **Do not include headset serial numbers, account IDs, Discord tokens, private messages, screenshots with personal details, or voice recordings.** Use a secondary/test account and synthetic message content.
+  - type: dropdown
+    id: headset
+    attributes:
+      label: Headset model
+      options:
+        - Quest 2
+        - Quest Pro
+        - Quest 3
+        - Quest 3S
+        - Other / not sure
+    validations:
+      required: true
+  - type: input
+    id: horizon_version
+    attributes:
+      label: Horizon OS version/build
+      description: Do not include the headset serial number.
+    validations:
+      required: true
+  - type: dropdown
+    id: discord_route
+    attributes:
+      label: Discord app route
+      options:
+        - Official Meta Horizon Store Discord app
+        - Standard Android Discord APK installed separately
+        - Other / unsure
+    validations:
+      required: true
+  - type: input
+    id: kettu_manager
+    attributes:
+      label: KettuManager version/source (if used)
+    validations:
+      required: false
+  - type: input
+    id: kettu_version
+    attributes:
+      label: Kettu version (if known)
+    validations:
+      required: false
+  - type: input
+    id: privacytoolkit_version
+    attributes:
+      label: PrivacyToolkit build / branch
+    validations:
+      required: false
+  - type: dropdown
+    id: discord_launch
+    attributes:
+      label: Did the Discord app launch in Quest?
+      options:
+        - Yes
+        - No
+        - Not tested
+    validations:
+      required: true
+  - type: dropdown
+    id: kettu_load
+    attributes:
+      label: Did Kettu load?
+      options:
+        - Yes
+        - No
+        - Not tested
+    validations:
+      required: true
+  - type: dropdown
+    id: plugin_load
+    attributes:
+      label: Did PrivacyToolkit load and show settings?
+      options:
+        - Yes
+        - No
+        - Partially
+        - Not tested
+    validations:
+      required: true
+  - type: dropdown
+    id: send_hook
+    attributes:
+      label: Did outgoing-message detection work with synthetic test text?
+      options:
+        - Yes
+        - No
+        - Partially
+        - Not tested
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps and test results
+      description: Include what worked, what failed, and the exact synthetic test case (for example tester@example.invalid).
+    validations:
+      required: true
+  - type: textarea
+    id: errors
+    attributes:
+      label: Sanitized errors (optional)
+      description: Remove usernames, paths with personal names, IDs, tokens, and private information.
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: I used synthetic data and removed private messages, credentials, serial numbers, and other identifying details.
+          required: true
