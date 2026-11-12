@@ -1,7 +1,6 @@
 name: Meta Quest compatibility report
 description: Report whether the experimental Kettu/Android Discord route works on your Quest headset.
 title: "[Quest compatibility]: "
-labels: ["compatibility"]
 body:
   - type: markdown
     attributes:
