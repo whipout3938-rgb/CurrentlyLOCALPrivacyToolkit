@@ -16,6 +16,9 @@ jobs:
       - name: Check out PrivacyToolkit
         uses: actions/checkout@v4
 
+      - name: Run IPv6 false-positive regression tests
+        run: node scripts/test-ipv6-regression.mjs
+
       - name: Check out current Vencord
         uses: actions/checkout@v4
         with:
