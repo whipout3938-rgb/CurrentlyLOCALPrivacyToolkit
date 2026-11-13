@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Beta testing guide
+    url: https://github.com/whipout3938-rgb/CurrentlyLOCALPrivacyToolkit/blob/main/docs/BETA_TESTING.md
+    about: Read supported platforms, safe test cases, known issues, and privacy rules before reporting.

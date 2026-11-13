@@ -1,62 +1,116 @@
-name: Bug report
-description: Report a PrivacyToolkit problem to the plugin makers.
-title: "[Bug]: "
+name: Beta bug / false-positive report
+description: Report a reproducible problem, missed detection, or false positive.
+title: "[Beta bug]: "
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
-      value: "Please do not include personal information, Discord tokens, private recordings, or unredacted images."
-  - type: input
-    id: plugin-version
+      value: |
+        Thanks for testing. **Never include real personal data, private messages, tokens, passwords, private screenshots, photos, or call recordings.** Use synthetic examples only.
+  - type: dropdown
+    id: report_type
     attributes:
-      label: PrivacyToolkit version
-      placeholder: "2.4.0"
+      label: Report type
+      options:
+        - Functional bug
+        - False positive (harmless content was flagged)
+        - Missed detection (a test pattern was not flagged)
+        - Compatibility / plugin did not load
+        - Performance or UI issue
     validations:
       required: true
   - type: input
-    id: vencord-version
+    id: plugin_version
     attributes:
-      label: Vencord version or build date
+      label: PrivacyToolkit version
+      description: Example: 2.5.0 pre-release
+      placeholder: 2.5.0
     validations:
       required: true
   - type: dropdown
-    id: area
+    id: platform
     attributes:
-      label: Feature area
+      label: Operating system
       options:
-        - ImageGuard automatic scan
-        - ImageGuard manual scan
-        - Image metadata / OCR / QR
-        - OPSEC Center
-        - Exposure Guard / message scanning
-        - Group DM protection
-        - Call recorder
-        - Update checker
+        - Windows
+        - macOS
+        - Linux
+        - Android
+        - iOS
+        - Meta Quest
         - Other
+    validations:
+      required: true
+  - type: input
+    id: os_version
+    attributes:
+      label: OS version / device
+      placeholder: Example: Windows 11 24H2; iPhone model and iOS build
+    validations:
+      required: true
+  - type: dropdown
+    id: discord_channel
+    attributes:
+      label: Discord client
+      options:
+        - Stable
+        - PTB
+        - Canary
+        - Mobile
+        - Other / not applicable
+    validations:
+      required: true
+  - type: input
+    id: vencord_version
+    attributes:
+      label: Vencord version or commit
+      description: For Kettu/mobile reports, enter the Kettu version instead.
+      placeholder: Version, commit, or unknown
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps, including relevant plugin settings.
+      placeholder: |
+        1. Open a private test channel.
+        2. Enable the relevant test setting.
+        3. Send a synthetic test message.
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: What did you expect to happen?
+      label: Expected behavior
     validations:
       required: true
   - type: textarea
     id: actual
     attributes:
-      label: What happened instead?
+      label: Actual behavior
     validations:
       required: true
   - type: textarea
-    id: reproduce
+    id: safe_example
     attributes:
-      label: Steps to reproduce
+      label: Synthetic example (optional)
+      description: Replace all real values with made-up examples such as tester@example.invalid or 192.0.2.10.
+      placeholder: Do not paste the original message.
     validations:
-      required: true
+      required: false
   - type: textarea
     id: logs
     attributes:
-      label: Error text or relevant logs
-      description: Remove tokens, IDs, private URLs, and personal information before posting.
+      label: Sanitized error output (optional)
+      description: Remove tokens, IDs, usernames, server names, paths containing your username, and other private details.
+      render: text
     validations:
       required: false
+  - type: checkboxes
+    id: privacy_check
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: I have removed real personal data, private content, credentials, and other people's recordings from this report.
+          required: true
